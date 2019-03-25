@@ -10,28 +10,28 @@ import (
 )
 
 type Map struct {
-	MagicByte          [4]byte
-	Level              Level
-	Width              uint8
-	Height             uint8
-	KingdomColors      AllowColors
-	AllowHumanColors   AllowColors
-	AllowAIColors      AllowColors
-	_                  [0x1D]byte // TODO: Kingdom count on 0x1A?
-	ConditionsWins     uint8
-	AIAlsoWins         Bool
-	AllowNormalVictory Bool
-	WinsData1          uint16
-	_                  [0x2c]byte
-	WinsData2          uint16
-	_                  [0x22]byte
-	ConditionsLoss     uint8
-	LossData1          uint16
-	_                  [0x2e]byte
-	LossData2          uint16
-	_                  [0x25]byte
-	DontStartWithHero  Bool
-	Race               Race
+	MagicByte          [4]byte     // 0x0
+	Level              Level       // 0x4
+	Width              uint8       // 0x6
+	Height             uint8       // 0x7
+	KingdomColors      AllowColors // 0x8
+	AllowHumanColors   AllowColors // 0xE  (14)
+	AllowAIColors      AllowColors // 0x14 (20)
+	_                  [3]byte     // 0x1A (26) TODO: Kingdom count?
+	ConditionsWins     uint8       // 0x1D (29)
+	AIAlsoWins         Bool        // 0x1E (30)
+	AllowNormalVictory Bool        // 0x1F (31)
+	WinsData1          uint16      // 0x20 (32)
+	ConditionsLoss     uint8       // 0x22 (34)
+	LossData1          uint16      // 0x23 (35)
+	StartWithHeroes    Bool        // 0x25 (37)
+	Race               RaceColor   // 0x26 (38)
+	WinsData2          uint16      // 0x2C (44)
+	LossData2          uint16      // 0x2e (46)
+	_                  [10]byte    // 0x30 (48)
+	Name               [16]byte    // 0x3A (58)
+	_                  [44]byte    // 0x4A (74)
+	Description        [143]byte   // 0x76 (118)
 }
 
 func (m *Map) String() string {
@@ -45,10 +45,27 @@ func (m *Map) String() string {
 	fmt.Fprintf(&b, "Wins data: %v, %v\n", m.WinsData1, m.WinsData2)
 	fmt.Fprintf(&b, "Conditions Loss: %v\n", m.ConditionsLoss)
 	fmt.Fprintf(&b, "Loss data: %v, %v\n", m.LossData1, m.LossData2)
-	fmt.Fprintf(&b, "DontStartWithHero: %v\n", m.DontStartWithHero)
+	fmt.Fprintf(&b, "StartWithHeroes: %v\n", m.StartWithHeroes)
 
 	fmt.Fprintf(&b, "Race: %v\n", m.Race)
+
+	fmt.Fprintf(&b, "Name: %s\n", nullTerminatedString(m.Name[:]))
+	fmt.Fprintf(&b, "Description: %s\n", nullTerminatedString(m.Description[:]))
+
 	return b.String()
+}
+
+func nullTerminatedString(nullTerminatedString []byte) string {
+	return string(nullTerminatedString[:nullTerminatedStringLen(nullTerminatedString)])
+}
+
+func nullTerminatedStringLen(nullTerminatedString []byte) int {
+	for i := 0; i < len(nullTerminatedString); i++ {
+		if nullTerminatedString[i] == 0 {
+			return i
+		}
+	}
+	return len(nullTerminatedString)
 }
 
 func LoadMap(r io.Reader) (*Map, error) {

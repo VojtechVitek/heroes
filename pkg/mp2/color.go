@@ -29,12 +29,12 @@ func (c Color) String() string { return colorString[c] }
 
 // 6 bytes, each representing "enable" flag for the following colors:
 // blue, green, red, yellow, orange, purple
-type AllowColors [6]uint8
+type AllowColors [6]Bool
 
 func (ac AllowColors) Colors() []Color {
 	colors := make([]Color, 0, 6)
 	for i, enable := range ac {
-		if enable > 0 {
+		if enable.Bool() {
 			switch i {
 			case 0:
 				colors = append(colors, Blue)
@@ -58,22 +58,3 @@ func (ac AllowColors) Colors() []Color {
 func (ac AllowColors) String() string {
 	return fmt.Sprintf("%v", ac.Colors())
 }
-
-// binary iota
-// const (
-// 	Blue Color = 1 << iota
-// 	Green
-// 	Red
-// 	Yellow
-// 	Orange
-// 	Purple
-// 	//_
-// 	//Unused
-
-// 	None = 0
-// 	//AnyColor = Blue | Green | Red | Yellow | Orange | Purple
-// )
-
-// func (c Color) String() string {
-// 	return fmt.Sprintf("%v", c)
-// }

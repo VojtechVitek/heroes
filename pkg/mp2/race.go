@@ -1,8 +1,10 @@
 package mp2
 
-import "fmt"
+import (
+	"fmt"
+)
 
-type Race uint16
+type Race uint8
 
 const (
 	Knight      Race = iota // 0
@@ -16,14 +18,14 @@ const (
 )
 
 var raceString = []string{
-	"knight",
-	"barbarian",
-	"sorcerer",
-	"warlock",
-	"wizzard",
-	"necromancer",
-	"multi",
-	"random",
+	"Knight",
+	"Barbarian",
+	"Sorcerer",
+	"Warlock",
+	"Wizzard",
+	"Necromancer",
+	"Multi",
+	"Random",
 }
 
 func (l Race) String() string {
@@ -32,3 +34,5 @@ func (l Race) String() string {
 	}
 	return raceString[l]
 }
+
+type RaceColor [6]Race
