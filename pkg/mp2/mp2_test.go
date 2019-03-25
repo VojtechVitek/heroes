@@ -2,6 +2,7 @@ package mp2
 
 import (
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -31,6 +32,6 @@ func TestParsingMp2Maps(t *testing.T) {
 			t.Error(err)
 		}
 
-		t.Logf("%+v", m)
+		t.Logf("%v:\n%+v", path.Base(file), m)
 	}
 }
