@@ -9,19 +9,20 @@ import (
 )
 
 func TestParsingMp2Maps(t *testing.T) {
-	var mp2Files []string
+	var mapFiles []string
 
 	dir, _ := os.Getwd()
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if strings.HasSuffix(path, ".mp2") {
-			mp2Files = append(mp2Files, path)
+		filenameLower := strings.ToLower(filepath.Base(path))
+		if strings.HasSuffix(filenameLower, ".mp2") || strings.HasSuffix(filenameLower, ".mx2") {
+			mapFiles = append(mapFiles, path)
 		}
 		return nil
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, file := range mp2Files {
+	for _, file := range mapFiles {
 		f, err := os.Open(file)
 		if err != nil {
 			t.Error(err)

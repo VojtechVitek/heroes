@@ -2,7 +2,6 @@ package mp2
 
 import (
 	"fmt"
-	"log"
 )
 
 type Color int
@@ -51,7 +50,7 @@ func (ac AllowColors) Colors() []Color {
 			}
 		}
 	}
-	log.Println(fmt.Sprintf("%v", colors))
+
 	return colors
 }
 
