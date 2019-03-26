@@ -10,6 +10,10 @@ import (
 )
 
 type Map struct {
+	*MapInfo
+}
+
+type MapInfo struct {
 	MagicByte          [4]byte     // 0x0
 	Level              Level       // 0x4
 	Width              uint8       // 0x6
@@ -32,6 +36,32 @@ type Map struct {
 	Name               [16]byte    // 0x3A (58)
 	_                  [44]byte    // 0x4A (74)
 	Description        [143]byte   // 0x76 (118)
+}
+
+func LoadMap(r io.Reader) (*Map, error) {
+	mapInfo, err := LoadMapInfo(r)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to load map info")
+	}
+
+	m := &Map{
+		MapInfo: mapInfo,
+	}
+
+	return m, nil
+}
+
+func LoadMapInfo(r io.Reader) (*MapInfo, error) {
+	mapInfo := &MapInfo{}
+	if err := binary.Read(r, binary.LittleEndian, mapInfo); err != nil {
+		return nil, errors.Wrap(err, "failed to deserialize map info data")
+	}
+
+	if magicByte := [4]byte{0x5C, 0x00, 0x00, 0x00}; mapInfo.MagicByte != magicByte {
+		return nil, errors.Errorf("expected magic byte %v, got %v", magicByte, mapInfo.MagicByte)
+	}
+
+	return mapInfo, nil
 }
 
 func (m *Map) String() string {
@@ -66,17 +96,4 @@ func nullTerminatedStringLen(nullTerminatedString []byte) int {
 		}
 	}
 	return len(nullTerminatedString)
-}
-
-func LoadMap(r io.Reader) (*Map, error) {
-	m := &Map{}
-	if err := binary.Read(r, binary.LittleEndian, m); err != nil {
-		return nil, errors.Wrap(err, "failed to deserialize map data")
-	}
-
-	if magicByte := [4]byte{0x5C, 0x00, 0x00, 0x00}; m.MagicByte != magicByte {
-		return nil, errors.Errorf("expected magic byte %v, got %v", magicByte, m.MagicByte)
-	}
-
-	return m, nil
 }

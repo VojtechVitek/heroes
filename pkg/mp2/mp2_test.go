@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestParsingMp2Maps(t *testing.T) {
+func TestLoadMap(t *testing.T) {
 	var mapFiles []string
 
 	dir, _ := os.Getwd()
