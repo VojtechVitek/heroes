@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/pkg/errors"
 )
 
 func TestLoadMap(t *testing.T) {
@@ -25,14 +27,15 @@ func TestLoadMap(t *testing.T) {
 	for _, file := range mapFiles {
 		f, err := os.Open(file)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		m, err := LoadMap(f)
 		if err != nil {
-			t.Error(err)
+			t.Error(errors.Wrapf(err, "failed to parse %v", file))
+			continue
 		}
 
-		t.Logf("%v:\n%+v", path.Base(file), m)
+		t.Log(path.Base(file), "width:", m.Width(), "height:", m.Height()) //, "mapWidth:", m.MapWidth, "mapHeight:", m.MapHeight, "\nmapTiles:", m.MapTiles)
 	}
 }
