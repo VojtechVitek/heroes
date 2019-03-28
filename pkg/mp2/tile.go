@@ -6,6 +6,9 @@ import (
 )
 
 type MapTile struct {
+	// Note: The struct padding is correct on 64bit processors..
+	// but we should probably rewrite this into []byte and parse
+	// fields individually by hand like for the Header.
 	TileIndex     uint16 // 0x00
 	ObjectName1   uint8  // 0x02
 	IndexName1    uint8  // 0x03
