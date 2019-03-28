@@ -19,7 +19,7 @@ import (
 // combine uint16 and uint8. ¯\_(ツ)_/¯
 //
 // 0x0		0		MagicByte			4 bytes
-// 0x4		4		Level				2 bytes
+// 0x4		4		Difficulty				2 bytes
 // 0x6		6		Width				1 byte
 // 0x7		7		Height				1 byte
 // 0x8		8		KingdomColors		6 bytes
@@ -82,9 +82,9 @@ func (h Header) Validate() error {
 
 	return nil
 }
-func (h Header) Level() Level { return Level(binary.LittleEndian.Uint16(h[4:6])) }
-func (h Header) Width() int   { return int(h[6]) }
-func (h Header) Height() int  { return int(h[7]) }
+func (h Header) Difficulty() Difficulty { return Difficulty(binary.LittleEndian.Uint16(h[4:6])) }
+func (h Header) Width() int             { return int(h[6]) }
+func (h Header) Height() int            { return int(h[7]) }
 func (h Header) KingdomColors() (colors AllowColors) {
 	_ = binary.Read(bytes.NewReader(h[8:14]), binary.LittleEndian, &colors)
 	return
@@ -116,7 +116,7 @@ func (h Header) Description() string { return nullTerminatedString(h[118:261]) }
 func (h Header) String() string {
 	var b strings.Builder
 
-	fmt.Fprintf(&b, "Level: %v\nWidth: %v, Height: %v\n", h.Level(), h.Width(), h.Height())
+	fmt.Fprintf(&b, "Difficulty: %v\nWidth: %v, Height: %v\n", h.Difficulty(), h.Width(), h.Height())
 	fmt.Fprintf(&b, "Kingdom colors: %v\nHuman colors: %v\nAI colors: %v\n", h.KingdomColors(), h.AllowHumanColors(), h.AllowAIColors())
 
 	fmt.Fprintf(&b, "Conditions Wins: %v\n", h.ConditionsWins())
