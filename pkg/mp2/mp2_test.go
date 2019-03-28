@@ -32,10 +32,10 @@ func TestLoadMap(t *testing.T) {
 
 		m, err := LoadMap(f)
 		if err != nil {
-			t.Error(errors.Wrapf(err, "failed to parse %v", file))
+			t.Error(errors.Wrapf(err, "failed to load map %v", file))
 			continue
 		}
 
-		t.Log(path.Base(file), "width:", m.Width(), "height:", m.Height(), "\n", m.Name(), "\n", m.Description(), "\nmapTiles:", m.MapTiles)
+		t.Log(path.Base(file), "width:", m.Width(), "height:", m.Height(), "\n", m.Name(), "\n", m.Description(), "\ntiles:", m.Tiles)
 	}
 }
