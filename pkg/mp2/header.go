@@ -3,7 +3,9 @@ package mp2
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"io"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -98,15 +100,36 @@ func (h Header) AllowAIColors() (colors AllowColors) {
 func (h Header) ConditionsWins() uint8    { return uint8(h[29]) }
 func (h Header) AIAlsoWins() bool         { return uint8(h[30]) > 0 }
 func (h Header) AllowNormalVictory() bool { return uint8(h[31]) > 0 }
-func (h Header) WinsData1() uint32        { return binary.LittleEndian.Uint32(h[32:34]) }
+func (h Header) WinsData1() uint16        { return binary.LittleEndian.Uint16(h[32:34]) }
 func (h Header) ConditionsLoss() uint8    { return uint8(h[34]) }
-func (h Header) LossData1() uint32        { return binary.LittleEndian.Uint32(h[35:37]) }
+func (h Header) LossData1() uint16        { return binary.LittleEndian.Uint16(h[35:37]) }
 func (h Header) StartWithHeroes() bool    { return uint8(h[37]) > 0 }
 func (h Header) Races() (races [6]Race) {
 	_ = binary.Read(bytes.NewReader(h[38:44]), binary.LittleEndian, &races)
 	return
 }
-func (h Header) WinsData2() uint32   { return binary.LittleEndian.Uint32(h[44:46]) }
-func (h Header) LossData2() uint32   { return binary.LittleEndian.Uint32(h[46:48]) }
+func (h Header) WinsData2() uint16   { return binary.LittleEndian.Uint16(h[44:46]) }
+func (h Header) LossData2() uint16   { return binary.LittleEndian.Uint16(h[46:48]) }
 func (h Header) Name() string        { return nullTerminatedString(h[58:74]) }
 func (h Header) Description() string { return nullTerminatedString(h[118:261]) }
+
+func (h Header) String() string {
+	var b strings.Builder
+
+	fmt.Fprintf(&b, "Level: %v\nWidth: %v, Height: %v\n", h.Level(), h.Width(), h.Height())
+	fmt.Fprintf(&b, "Kingdom colors: %v\nHuman colors: %v\nAI colors: %v\n", h.KingdomColors(), h.AllowHumanColors(), h.AllowAIColors())
+
+	fmt.Fprintf(&b, "Conditions Wins: %v\n", h.ConditionsWins())
+	fmt.Fprintf(&b, "AIAlsoWins: %v, AllowNormalVictory: %v\n", h.AIAlsoWins(), h.AllowNormalVictory())
+	fmt.Fprintf(&b, "Wins data: %v, %v\n", h.WinsData1(), h.WinsData2())
+	fmt.Fprintf(&b, "Conditions Loss: %v\n", h.ConditionsLoss())
+	fmt.Fprintf(&b, "Loss data: %v, %v\n", h.LossData1(), h.LossData2())
+	fmt.Fprintf(&b, "StartWithHeroes: %v\n", h.StartWithHeroes())
+
+	fmt.Fprintf(&b, "Races: %v\n", h.Races())
+
+	fmt.Fprintf(&b, "Name: %s\n", h.Name())
+	fmt.Fprintf(&b, "Description: %s\n", h.Description())
+
+	return b.String()
+}
