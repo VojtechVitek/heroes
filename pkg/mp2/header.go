@@ -117,20 +117,19 @@ func (h Header) Description() string  { return nullTerminatedString(h[118:261]) 
 func (h Header) String() string {
 	var b strings.Builder
 
+	fmt.Fprintf(&b, "Name: %s\n", h.Name())
 	fmt.Fprintf(&b, "Difficulty: %v\nWidth: %v, Height: %v\n", h.Difficulty(), h.Width(), h.Height())
-	fmt.Fprintf(&b, "Kingdom colors: %v\nHuman colors: %v\nAI colors: %v\n", h.KingdomColors(), h.AllowHumanColors(), h.AllowAIColors())
+	fmt.Fprintf(&b, "Description: %s\n", h.Description())
 
-	fmt.Fprintf(&b, "Victory conditions: %v\n", h.VictoryConditions())
-	fmt.Fprintf(&b, "AIAlsoWins: %v, AllowNormalVictory: %v\n", h.AIAlsoWins(), h.AllowNormalVictory())
-	fmt.Fprintf(&b, "Wins data: %v, %v\n", h.VictoryData1(), h.VictoryData2())
-	fmt.Fprintf(&b, "Loss conditions: %v\n", h.LossConditions())
-	fmt.Fprintf(&b, "Loss data: %v, %v\n", h.LossData1(), h.LossData2())
-	fmt.Fprintf(&b, "StartWithHeroes: %v\n", h.StartWithHeroes())
-
+	fmt.Fprintf(&b, "Players %v, Human: %v, AI: %v\n", h.KingdomColors(), h.AllowHumanColors(), h.AllowAIColors())
 	fmt.Fprintf(&b, "Races: %v\n", h.Races())
 
-	fmt.Fprintf(&b, "Name: %s\n", h.Name())
-	fmt.Fprintf(&b, "Description: %s\n", h.Description())
+	fmt.Fprintf(&b, "Victory conditions: %v\n", h.VictoryConditions())
+	//fmt.Fprintf(&b, "AIAlsoWins: %v, AllowNormalVictory: %v\n", h.AIAlsoWins(), h.AllowNormalVictory())
+	//fmt.Fprintf(&b, "Victory data: %v, %v\n", h.VictoryData1(), h.VictoryData2())
+	fmt.Fprintf(&b, "Loss conditions: %v\n", h.LossConditions())
+	//fmt.Fprintf(&b, "Loss data: %v, %v\n", h.LossData1(), h.LossData2())
+	fmt.Fprintf(&b, "StartWithHeroes: %v\n", h.StartWithHeroes())
 
 	return b.String()
 }
