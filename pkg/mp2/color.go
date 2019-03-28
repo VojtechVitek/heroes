@@ -28,12 +28,12 @@ func (c Color) String() string { return colorString[c] }
 
 // 6 bytes, each representing "enable" flag for the following colors:
 // blue, green, red, yellow, orange, purple
-type AllowColors [6]Bool
+type AllowColors [6]uint8
 
 func (ac AllowColors) Colors() []Color {
 	colors := make([]Color, 0, 6)
-	for i, enable := range ac {
-		if enable.Bool() {
+	for i, boolFlag := range ac {
+		if boolFlag > 0 {
 			switch i {
 			case 0:
 				colors = append(colors, Blue)

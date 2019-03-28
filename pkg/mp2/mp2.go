@@ -41,7 +41,7 @@ type Map struct {
 // 0x22		34		ConditionsLoss		1 byte
 // 0x23		35		LossData1			2 bytes
 // 0x25		37		StartWithHeroes		1 byte
-// 0x26		38		Race				6 bytes
+// 0x26		38		Races				6 bytes
 // 0x2C		44		WinsData2			2 bytes
 // 0x2e		46		LossData2			2 bytes
 // 0x30		48		_					10 bytes
@@ -49,14 +49,37 @@ type Map struct {
 // 0x4A		74		_					44 bytes
 // 0x76		118		Description			143 bytes
 // 0x105	261		_					159 bytes
-// 0x1A4	420		MapWidth			4 bytes
-// 0x1A8	424		MapHeight			4 bytes
+// 0x1A4	420		Width duplicate		4 bytes
+// 0x1A8	424		Height duplicate	4 bytes
 type MapInfo [428]byte
 
-func (i MapInfo) MagicByte() uint32 { return binary.BigEndian.Uint32(i[0:4]) }
-func (i MapInfo) Level() Level      { return Level(binary.LittleEndian.Uint16(i[4:6])) }
-func (i MapInfo) Width() uint8      { return uint8(i[6]) }
-func (i MapInfo) Height() uint8     { return uint8(i[7]) }
+func (i MapInfo) Validate() error {
+	magicByte := binary.BigEndian.Uint32(i[0:4])
+	if magicByte != uint32(0x5C000000) {
+		return errors.Errorf("expected magic byte %v, got %v", uint32(0x5C000000), magicByte)
+	}
+
+	// Duplicated Width and Height fields must match.
+	widthDuplicate := int(binary.LittleEndian.Uint32(i[420:424]))
+	if i.Width() != widthDuplicate {
+		return errors.Errorf("map width mismatch: %v != %v", i.Width(), widthDuplicate)
+	}
+
+	heightDuplicate := int(binary.LittleEndian.Uint32(i[424:428]))
+	if i.Height() != heightDuplicate {
+		return errors.Errorf("map height mismatch: %v != %v", i.Height(), heightDuplicate)
+	}
+
+	// Map Width must be same as Height. It's always a square.
+	if widthDuplicate != heightDuplicate {
+		return errors.Errorf("map must be a square: got width=%v, height:%v", widthDuplicate, heightDuplicate)
+	}
+
+	return nil
+}
+func (i MapInfo) Level() Level { return Level(binary.LittleEndian.Uint16(i[4:6])) }
+func (i MapInfo) Width() int   { return int(i[6]) }
+func (i MapInfo) Height() int  { return int(i[7]) }
 func (i MapInfo) KingdomColors() (colors AllowColors) {
 	if err := binary.Read(bytes.NewReader(i[8:14]), binary.LittleEndian, &colors); err != nil {
 		panic(err)
@@ -75,31 +98,23 @@ func (i MapInfo) AllowAIColors() (colors AllowColors) {
 	}
 	return
 }
-
-// func (i MapInfo) ConditionsWins() uint8 { // 0x1D (29)
-// }
-// func (i MapInfo) AIAlsoWins() Bool { // 0x1E (30)
-// }
-// func (i MapInfo) AllowNormalVictory() Bool { // 0x1F (31)
-// }
-// func (i MapInfo) WinsData1() uint16 { // 0x20 (32)
-// }
-// func (i MapInfo) ConditionsLoss() uint8 { // 0x22 (34)
-// }
-// func (i MapInfo) LossData1() uint16 { // 0x23 (35)
-// }
-// func (i MapInfo) StartWithHeroes() Bool { // 0x25 (37)
-// }
-// func (i MapInfo) Race() RaceColor { // 0x26 (38)
-// }
-// func (i MapInfo) WinsData2() uint16 { // 0x2C (44)
-// }
-// func (i MapInfo) LossData2() uint16 { // 0x2e (46)
-// }
+func (i MapInfo) ConditionsWins() uint8    { return uint8(i[29]) }
+func (i MapInfo) AIAlsoWins() bool         { return uint8(i[30]) > 0 }
+func (i MapInfo) AllowNormalVictory() bool { return uint8(i[31]) > 0 }
+func (i MapInfo) WinsData1() uint32        { return binary.LittleEndian.Uint32(i[32:34]) }
+func (i MapInfo) ConditionsLoss() uint8    { return uint8(i[34]) }
+func (i MapInfo) LossData1() uint32        { return binary.LittleEndian.Uint32(i[35:37]) }
+func (i MapInfo) StartWithHeroes() bool    { return uint8(i[37]) > 0 }
+func (i MapInfo) Races() (races [6]Race) {
+	if err := binary.Read(bytes.NewReader(i[38:44]), binary.LittleEndian, &races); err != nil {
+		panic(err)
+	}
+	return
+}
+func (i MapInfo) WinsData2() uint32   { return binary.LittleEndian.Uint32(i[44:46]) }
+func (i MapInfo) LossData2() uint32   { return binary.LittleEndian.Uint32(i[46:48]) }
 func (i MapInfo) Name() string        { return nullTerminatedString(i[58:74]) }
 func (i MapInfo) Description() string { return nullTerminatedString(i[118:261]) }
-func (i MapInfo) MapWidth() uint32    { return binary.LittleEndian.Uint32(i[420:424]) }
-func (i MapInfo) MapHeight() uint32   { return binary.LittleEndian.Uint32(i[424:428]) }
 
 type MapTile struct {
 	TileIndex     uint16 // 0x00
@@ -119,15 +134,14 @@ func LoadMap(r io.Reader) (*Map, error) {
 		return nil, errors.Wrap(err, "failed to load map info")
 	}
 
-	// mapTiles := make([]MapTile, mapInfo.Width()*mapInfo.Height())
-	// //mapTiles := make([]MapTile, 8, 8)
-	// if err := binary.Read(r, binary.LittleEndian, mapTiles); err != nil {
-	// 	return nil, errors.Wrap(err, "failed to deserialize map tiles")
-	// }
+	mapTiles := make([]MapTile, mapInfo.Width()*mapInfo.Height())
+	if err := binary.Read(r, binary.LittleEndian, mapTiles); err != nil {
+		return nil, errors.Wrap(err, "failed to deserialize map tiles")
+	}
 
 	m := &Map{
-		MapInfo: mapInfo,
-		//		MapTiles: mapTiles,
+		MapInfo:  mapInfo,
+		MapTiles: mapTiles,
 	}
 
 	return m, nil
@@ -139,8 +153,8 @@ func LoadMapInfo(r io.Reader) (*MapInfo, error) {
 		return nil, errors.Wrap(err, "failed to deserialize map info data")
 	}
 
-	if magicByte := uint32(0x5C000000); mapInfo.MagicByte() != magicByte {
-		return nil, errors.Errorf("expected magic byte %v, got %v", magicByte, mapInfo.MagicByte())
+	if err := mapInfo.Validate(); err != nil {
+		return nil, errors.Wrap(err, "failed to validate map")
 	}
 
 	return mapInfo, nil
@@ -152,20 +166,19 @@ func (m *Map) String() string {
 	fmt.Fprintf(&b, "Level: %v\nWidth: %v, Height: %v\n", m.Level(), m.Width(), m.Height())
 	fmt.Fprintf(&b, "Kingdom colors: %v\nHuman colors: %v\nAI colors: %v\n", m.KingdomColors(), m.AllowHumanColors(), m.AllowAIColors())
 
-	// fmt.Fprintf(&b, "Conditions Wins: %v\n", m.ConditionsWins())
-	// fmt.Fprintf(&b, "AIAlsoWins: %v, AllowNormalVictory: %v\n", m.AIAlsoWins(), m.AllowNormalVictory())
-	// fmt.Fprintf(&b, "Wins data: %v, %v\n", m.WinsData1(), m.WinsData2())
-	// fmt.Fprintf(&b, "Conditions Loss: %v\n", m.ConditionsLoss())
-	// fmt.Fprintf(&b, "Loss data: %v, %v\n", m.LossData1(), m.LossData2())
-	// fmt.Fprintf(&b, "StartWithHeroes: %v\n", m.StartWithHeroes())
+	fmt.Fprintf(&b, "Conditions Wins: %v\n", m.ConditionsWins())
+	fmt.Fprintf(&b, "AIAlsoWins: %v, AllowNormalVictory: %v\n", m.AIAlsoWins(), m.AllowNormalVictory())
+	fmt.Fprintf(&b, "Wins data: %v, %v\n", m.WinsData1(), m.WinsData2())
+	fmt.Fprintf(&b, "Conditions Loss: %v\n", m.ConditionsLoss())
+	fmt.Fprintf(&b, "Loss data: %v, %v\n", m.LossData1(), m.LossData2())
+	fmt.Fprintf(&b, "StartWithHeroes: %v\n", m.StartWithHeroes())
 
-	// fmt.Fprintf(&b, "Race: %v\n", m.Race())
+	fmt.Fprintf(&b, "Races: %v\n", m.Races())
 
-	// fmt.Fprintf(&b, "Name: %s\n", m.Name())
-	// fmt.Fprintf(&b, "Description: %s\n", m.Description())
+	fmt.Fprintf(&b, "Name: %s\n", m.Name())
+	fmt.Fprintf(&b, "Description: %s\n", m.Description())
 
-	fmt.Fprintf(&b, "MapWidth: %v, MapHeight: %v\n", m.MapWidth(), m.MapHeight())
-	// fmt.Fprintf(&b, "MapTiles: %v\n", m.MapTiles())
+	fmt.Fprintf(&b, "MapTiles: %v\n", m.MapTiles)
 
 	return b.String()
 }

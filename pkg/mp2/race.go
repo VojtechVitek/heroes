@@ -34,5 +34,3 @@ func (l Race) String() string {
 	}
 	return raceString[l]
 }
-
-type RaceColor [6]Race
