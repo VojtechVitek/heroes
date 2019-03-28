@@ -19,22 +19,22 @@ import (
 // combine uint16 and uint8. ¯\_(ツ)_/¯
 //
 // 0x0		0		MagicByte			4 bytes
-// 0x4		4		Difficulty				2 bytes
+// 0x4		4		Difficulty			2 bytes
 // 0x6		6		Width				1 byte
 // 0x7		7		Height				1 byte
 // 0x8		8		KingdomColors		6 bytes
 // 0xE		14		AllowHumanColors	6 bytes
 // 0x14		20		AllowAIColors		6 bytes
 // 0x1A		26		_ (Kingdom Count?)	3 bytes
-// 0x1D		29		ConditionsWins		1 byte
+// 0x1D		29		VictoryConditions	1 byte
 // 0x1E		30		AIAlsoWins			1 byte
 // 0x1F		31		AllowNormalVictory	1 byte
-// 0x20		32		WinsData1			2 bytes
-// 0x22		34		ConditionsLoss		1 byte
+// 0x20		32		VictoryData1		2 bytes
+// 0x22		34		LossConditions		1 byte
 // 0x23		35		LossData1			2 bytes
 // 0x25		37		StartWithHeroes		1 byte
 // 0x26		38		Races				6 bytes
-// 0x2C		44		WinsData2			2 bytes
+// 0x2C		44		VictoryData2		2 bytes
 // 0x2e		46		LossData2			2 bytes
 // 0x30		48		_					10 bytes
 // 0x3A		58		Name				16 bytes
@@ -98,21 +98,21 @@ func (h Header) AllowAIColors() (colors AllowColors) {
 	_ = binary.Read(bytes.NewReader(h[20:26]), binary.LittleEndian, &colors)
 	return
 }
-func (h Header) ConditionsWins() uint8    { return uint8(h[29]) }
-func (h Header) AIAlsoWins() bool         { return uint8(h[30]) > 0 }
-func (h Header) AllowNormalVictory() bool { return uint8(h[31]) > 0 }
-func (h Header) WinsData1() uint16        { return binary.LittleEndian.Uint16(h[32:34]) }
-func (h Header) ConditionsLoss() uint8    { return uint8(h[34]) }
-func (h Header) LossData1() uint16        { return binary.LittleEndian.Uint16(h[35:37]) }
-func (h Header) StartWithHeroes() bool    { return uint8(h[37]) > 0 }
+func (h Header) VictoryConditions() VictoryConditions { return VictoryConditions(h[29]) }
+func (h Header) AIAlsoWins() bool                     { return uint8(h[30]) > 0 }
+func (h Header) AllowNormalVictory() bool             { return uint8(h[31]) > 0 }
+func (h Header) VictoryData1() uint16                 { return binary.LittleEndian.Uint16(h[32:34]) }
+func (h Header) LossConditions() uint8                { return uint8(h[34]) }
+func (h Header) LossData1() uint16                    { return binary.LittleEndian.Uint16(h[35:37]) }
+func (h Header) StartWithHeroes() bool                { return uint8(h[37]) > 0 }
 func (h Header) Races() (races [6]Race) {
 	_ = binary.Read(bytes.NewReader(h[38:44]), binary.LittleEndian, &races)
 	return
 }
-func (h Header) WinsData2() uint16   { return binary.LittleEndian.Uint16(h[44:46]) }
-func (h Header) LossData2() uint16   { return binary.LittleEndian.Uint16(h[46:48]) }
-func (h Header) Name() string        { return nullTerminatedString(h[58:74]) }
-func (h Header) Description() string { return nullTerminatedString(h[118:261]) }
+func (h Header) VictoryData2() uint16 { return binary.LittleEndian.Uint16(h[44:46]) }
+func (h Header) LossData2() uint16    { return binary.LittleEndian.Uint16(h[46:48]) }
+func (h Header) Name() string         { return nullTerminatedString(h[58:74]) }
+func (h Header) Description() string  { return nullTerminatedString(h[118:261]) }
 
 func (h Header) String() string {
 	var b strings.Builder
@@ -120,10 +120,10 @@ func (h Header) String() string {
 	fmt.Fprintf(&b, "Difficulty: %v\nWidth: %v, Height: %v\n", h.Difficulty(), h.Width(), h.Height())
 	fmt.Fprintf(&b, "Kingdom colors: %v\nHuman colors: %v\nAI colors: %v\n", h.KingdomColors(), h.AllowHumanColors(), h.AllowAIColors())
 
-	fmt.Fprintf(&b, "Conditions Wins: %v\n", h.ConditionsWins())
+	fmt.Fprintf(&b, "Victory conditions: %v\n", h.VictoryConditions())
 	fmt.Fprintf(&b, "AIAlsoWins: %v, AllowNormalVictory: %v\n", h.AIAlsoWins(), h.AllowNormalVictory())
-	fmt.Fprintf(&b, "Wins data: %v, %v\n", h.WinsData1(), h.WinsData2())
-	fmt.Fprintf(&b, "Conditions Loss: %v\n", h.ConditionsLoss())
+	fmt.Fprintf(&b, "Wins data: %v, %v\n", h.VictoryData1(), h.VictoryData2())
+	fmt.Fprintf(&b, "Loss conditions: %v\n", h.LossConditions())
 	fmt.Fprintf(&b, "Loss data: %v, %v\n", h.LossData1(), h.LossData2())
 	fmt.Fprintf(&b, "StartWithHeroes: %v\n", h.StartWithHeroes())
 
