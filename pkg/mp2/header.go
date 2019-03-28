@@ -82,6 +82,7 @@ func (h Header) Validate() error {
 
 	return nil
 }
+
 func (h Header) Difficulty() Difficulty { return Difficulty(binary.LittleEndian.Uint16(h[4:6])) }
 func (h Header) Width() int             { return int(h[6]) }
 func (h Header) Height() int            { return int(h[7]) }

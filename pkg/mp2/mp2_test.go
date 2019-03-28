@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func TestLoadMap(t *testing.T) {
+func TestLoadMapsHeader(t *testing.T) {
 	var mapFiles []string
 
 	dir, _ := os.Getwd()
@@ -30,12 +30,27 @@ func TestLoadMap(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		m, err := LoadMap(f)
+		h, err := LoadHeader(f)
 		if err != nil {
-			t.Error(errors.Wrapf(err, "failed to load map %v", file))
-			continue
+			t.Fatal(errors.Wrapf(err, "failed to load map %v", file))
 		}
 
-		t.Log(path.Base(file), "width:", m.Width(), "height:", m.Height(), "\n", m.Name(), "\n", m.Description(), "\ntiles:", m.Tiles)
+		t.Log(path.Base(file), "width:", h.Width(), "height:", h.Height(), "\n", h.Name(), "\n", h.Description())
 	}
+}
+
+func TestLoadSingleMap(t *testing.T) {
+	file := "./maps/THEOTHER.MP2"
+
+	f, err := os.Open(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m, err := LoadMap(f)
+	if err != nil {
+		t.Fatal(errors.Wrapf(err, "failed to load map %v", file))
+	}
+	t.Log("header:", m.Header.String())
+	t.Log("tiles:", m.Tiles)
 }
