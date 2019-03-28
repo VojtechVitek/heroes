@@ -8,8 +8,8 @@ import (
 )
 
 type Map struct {
-	*Header           // 0x0
-	Tiles   []MapTile // 0x1AC (428)
+	*Header       // 0x0
+	Tiles   Tiles // 0x1AC (428)
 
 	// *Addons
 
@@ -23,7 +23,7 @@ func LoadMap(r io.Reader) (*Map, error) {
 		return nil, errors.Wrap(err, "failed to parse info")
 	}
 
-	tiles := make([]MapTile, header.Width()*header.Height())
+	tiles := make(Tiles, header.Width()*header.Height())
 	if err := binary.Read(r, binary.LittleEndian, tiles); err != nil {
 		return nil, errors.Wrap(err, "failed to parse tiles")
 	}

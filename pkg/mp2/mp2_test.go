@@ -41,7 +41,8 @@ func TestLoadMapsHeader(t *testing.T) {
 
 func TestLoadSingleMap(t *testing.T) {
 	//file := "./maps/THEOTHER.MP2"
-	file := "./maps/PANDAMON.MP2"
+	//file := "./maps/PANDAMON.MP2"
+	file := "./maps/SLUGFEST.MP2"
 
 	f, err := os.Open(file)
 	if err != nil {
@@ -52,6 +53,6 @@ func TestLoadSingleMap(t *testing.T) {
 	if err != nil {
 		t.Fatal(errors.Wrapf(err, "failed to load map %v", file))
 	}
-	t.Logf("%v\n%v", file, m.Header)
-	//t.Log("tiles:", m.Tiles)
+	//t.Logf("%v\n%v", file, m.Header)
+	t.Log("tiles:", m.Tiles)
 }
