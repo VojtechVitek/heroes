@@ -102,7 +102,7 @@ func (h Header) VictoryConditions() VictoryConditions { return VictoryConditions
 func (h Header) AIAlsoWins() bool                     { return uint8(h[30]) > 0 }
 func (h Header) AllowNormalVictory() bool             { return uint8(h[31]) > 0 }
 func (h Header) VictoryData1() uint16                 { return binary.LittleEndian.Uint16(h[32:34]) }
-func (h Header) LossConditions() uint8                { return uint8(h[34]) }
+func (h Header) LossConditions() LossConditions       { return LossConditions(h[34]) }
 func (h Header) LossData1() uint16                    { return binary.LittleEndian.Uint16(h[35:37]) }
 func (h Header) StartWithHeroes() bool                { return uint8(h[37]) > 0 }
 func (h Header) Races() (races [6]Race) {
