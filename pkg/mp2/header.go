@@ -105,7 +105,7 @@ func (h Header) VictoryData1() uint16                 { return binary.LittleEndi
 func (h Header) LossConditions() LossConditions       { return LossConditions(h[34]) }
 func (h Header) LossData1() uint16                    { return binary.LittleEndian.Uint16(h[35:37]) }
 func (h Header) StartWithHeroes() bool                { return uint8(h[37]) > 0 }
-func (h Header) Races() (races [6]Race) {
+func (h Header) Races() (races Races) {
 	_ = binary.Read(bytes.NewReader(h[38:44]), binary.LittleEndian, &races)
 	return
 }

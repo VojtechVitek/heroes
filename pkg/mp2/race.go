@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+type Races [6]Race
+
 type Race uint8
 
 const (
@@ -15,6 +17,8 @@ const (
 	Necromancer             // 5
 	Multi                   // 6
 	Random                  // 7
+
+	_none = 255 // 255
 )
 
 var raceString = []string{
@@ -29,6 +33,9 @@ var raceString = []string{
 }
 
 func (l Race) String() string {
+	if int(l) == 255 {
+		return "-"
+	}
 	if int(l) > len(raceString)-1 {
 		return fmt.Sprintf("%v", int(l))
 	}
