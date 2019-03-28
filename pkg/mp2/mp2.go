@@ -1,6 +1,7 @@
 package mp2
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -49,19 +50,32 @@ type Map struct {
 // 0x76		118		Description			143 bytes
 // 0x105	261		_					159 bytes
 // 0x1A4	420		MapWidth			4 bytes
-// 0x1A8	424		MapHeight			4 bytes\
+// 0x1A8	424		MapHeight			4 bytes
 type MapInfo [428]byte
 
-func (i MapInfo) MagicByte() uint32          { return binary.BigEndian.Uint32(i[0:4]) }
-func (i MapInfo) Level() Level               { return Level(binary.LittleEndian.Uint16(i[4:6])) }
-func (i MapInfo) Width() uint8               { return uint8(i[6]) }
-func (i MapInfo) Height() uint8              { return uint8(i[7]) }
-func (i MapInfo) KingdomColors() AllowColors {}
+func (i MapInfo) MagicByte() uint32 { return binary.BigEndian.Uint32(i[0:4]) }
+func (i MapInfo) Level() Level      { return Level(binary.LittleEndian.Uint16(i[4:6])) }
+func (i MapInfo) Width() uint8      { return uint8(i[6]) }
+func (i MapInfo) Height() uint8     { return uint8(i[7]) }
+func (i MapInfo) KingdomColors() (colors AllowColors) {
+	if err := binary.Read(bytes.NewReader(i[8:14]), binary.LittleEndian, &colors); err != nil {
+		panic(err)
+	}
+	return
+}
+func (i MapInfo) AllowHumanColors() (colors AllowColors) {
+	if err := binary.Read(bytes.NewReader(i[14:20]), binary.LittleEndian, &colors); err != nil {
+		panic(err)
+	}
+	return
+}
+func (i MapInfo) AllowAIColors() (colors AllowColors) {
+	if err := binary.Read(bytes.NewReader(i[20:26]), binary.LittleEndian, &colors); err != nil {
+		panic(err)
+	}
+	return
+}
 
-// func (i MapInfo) AllowHumanColors() AllowColors { // 0xE  (14)
-// }
-// func (i MapInfo) AllowAIColors() AllowColors { // 0x14 (20)
-// }
 // func (i MapInfo) ConditionsWins() uint8 { // 0x1D (29)
 // }
 // func (i MapInfo) AIAlsoWins() Bool { // 0x1E (30)
@@ -82,14 +96,10 @@ func (i MapInfo) KingdomColors() AllowColors {}
 // }
 // func (i MapInfo) LossData2() uint16 { // 0x2e (46)
 // }
-// func (i MapInfo) Name() [16]byte { // 0x3A (58)
-// }
-// func (i MapInfo) Description() [143]byte { // 0x76 (118)
-// }
-// func (i MapInfo) MapWidth() uint32 { // 0x1A4 (420)
-// }
-// func (i MapInfo) MapHeight() uint32 { // 0x1A8 (424)
-// }
+func (i MapInfo) Name() string        { return nullTerminatedString(i[58:74]) }
+func (i MapInfo) Description() string { return nullTerminatedString(i[118:261]) }
+func (i MapInfo) MapWidth() uint32    { return binary.LittleEndian.Uint32(i[420:424]) }
+func (i MapInfo) MapHeight() uint32   { return binary.LittleEndian.Uint32(i[424:428]) }
 
 type MapTile struct {
 	TileIndex     uint16 // 0x00
@@ -140,7 +150,7 @@ func (m *Map) String() string {
 	var b strings.Builder
 
 	fmt.Fprintf(&b, "Level: %v\nWidth: %v, Height: %v\n", m.Level(), m.Width(), m.Height())
-	//	fmt.Fprintf(&b, "Kingdom colors: %v\nHuman colors: %v\nAI colors: %v\n", m.KingdomColors(), m.AllowHumanColors(), m.AllowAIColors())
+	fmt.Fprintf(&b, "Kingdom colors: %v\nHuman colors: %v\nAI colors: %v\n", m.KingdomColors(), m.AllowHumanColors(), m.AllowAIColors())
 
 	// fmt.Fprintf(&b, "Conditions Wins: %v\n", m.ConditionsWins())
 	// fmt.Fprintf(&b, "AIAlsoWins: %v, AllowNormalVictory: %v\n", m.AIAlsoWins(), m.AllowNormalVictory())
@@ -151,10 +161,10 @@ func (m *Map) String() string {
 
 	// fmt.Fprintf(&b, "Race: %v\n", m.Race())
 
-	// fmt.Fprintf(&b, "Name: %s\n", nullTerminatedString(m.Name()[:]))
-	// fmt.Fprintf(&b, "Description: %s\n", nullTerminatedString(m.Description()[:]))
+	// fmt.Fprintf(&b, "Name: %s\n", m.Name())
+	// fmt.Fprintf(&b, "Description: %s\n", m.Description())
 
-	// fmt.Fprintf(&b, "MapWidth: %v, MapHeight: %v\n", m.MapWidth(), m.MapHeight())
+	fmt.Fprintf(&b, "MapWidth: %v, MapHeight: %v\n", m.MapWidth(), m.MapHeight())
 	// fmt.Fprintf(&b, "MapTiles: %v\n", m.MapTiles())
 
 	return b.String()

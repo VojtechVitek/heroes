@@ -36,6 +36,6 @@ func TestLoadMap(t *testing.T) {
 			continue
 		}
 
-		t.Log(path.Base(file), "width:", m.Width(), "height:", m.Height()) //, "mapWidth:", m.MapWidth, "mapHeight:", m.MapHeight, "\nmapTiles:", m.MapTiles)
+		t.Log(path.Base(file), "width:", m.Width(), "height:", m.Height(), "mapWidth:", m.MapWidth(), "mapHeight:", m.MapHeight(), "\n", m.Name(), "\n", m.Description(), "\nmapTiles:", m.MapTiles)
 	}
 }
