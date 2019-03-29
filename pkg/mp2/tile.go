@@ -11,7 +11,7 @@ type Tile struct {
 	// but we should probably rewrite this into []byte and parse
 	// fields individually by hand like for the Header.
 	TileIndex     uint16 // 0x00
-	ObjectName1   uint8  // 0x02
+	ObjectName1   uint8  // 0x02 .. why double?
 	IndexName1    uint8  // 0x03
 	Quantity1     uint8  // 0x04
 	Quantity2     uint8  // 0x05
@@ -19,6 +19,9 @@ type Tile struct {
 	IndexName2    uint8  // 0x07
 	Shape         uint8  // 0x08
 	GeneralObject Object // 0x09
+	IndexAddon    uint16 // 0x0A
+	UniqueNumber1 uint32 // 0x0C
+	UniqueNumber2 uint32 // 0x10
 } // sizeof: 0x14 (20)
 
 func (t Tile) String() string {
@@ -41,10 +44,24 @@ func (t Tiles) String() string {
 		fmt.Fprintf(&b, "%v:\n", x)
 
 		for y := 0; y < width; y++ {
-			fmt.Fprintf(&b, "%v ", t[x*width+y].ObjectName1)
+			fmt.Fprintf(&b, "%8v ", t[x*width+y].GeneralObject.String())
 		}
-
-		fmt.Fprintf(&b, "\n\n")
+		// fmt.Fprintf(&b, "\n")
+		// for y := 0; y < width; y++ {
+		// 	fmt.Fprintf(&b, "%v ", t[x*width+y].ObjectName1)
+		// }
+		// fmt.Fprintf(&b, "\n")
+		// for y := 0; y < width; y++ {
+		// 	fmt.Fprintf(&b, "%v ", t[x*width+y].ObjectName2)
+		// }
+		// for y := 0; y < width; y++ {
+		// 	fmt.Fprintf(&b, "%v ", t[x*width+y].IndexName1)
+		// }
+		// fmt.Fprintf(&b, "\n")
+		// for y := 0; y < width; y++ {
+		// 	fmt.Fprintf(&b, "%v ", t[x*width+y].IndexName2)
+		// }
+		// fmt.Fprintf(&b, "\n\n")
 	}
 
 	return b.String()

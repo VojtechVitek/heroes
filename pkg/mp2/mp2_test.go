@@ -53,6 +53,7 @@ func TestLoadSingleMap(t *testing.T) {
 	if err != nil {
 		t.Fatal(errors.Wrapf(err, "failed to load map %v", file))
 	}
+
 	//t.Logf("%v\n%v", file, m.Header)
 	t.Log("tiles:", m.Tiles)
 }
