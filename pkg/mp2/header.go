@@ -7,6 +7,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/VojtechVitek/heroes/pkg/cstring"
 	"github.com/pkg/errors"
 )
 
@@ -111,8 +112,8 @@ func (h Header) Races() (races Races) {
 }
 func (h Header) VictoryData2() uint16 { return binary.LittleEndian.Uint16(h[44:46]) }
 func (h Header) LossData2() uint16    { return binary.LittleEndian.Uint16(h[46:48]) }
-func (h Header) Name() string         { return nullTerminatedString(h[58:74]) }
-func (h Header) Description() string  { return nullTerminatedString(h[118:261]) }
+func (h Header) Name() string         { return cstring.String(h[58:74]) }
+func (h Header) Description() string  { return cstring.String(h[118:261]) }
 
 func (h Header) String() string {
 	var b strings.Builder
