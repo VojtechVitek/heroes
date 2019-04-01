@@ -8,10 +8,10 @@ import (
 	"github.com/VojtechVitek/heroes/pkg/cstring"
 )
 
-// 0x00    CRC      4 bytes
-// 0x04    Offset   4 bytes // TODO: This is 2 bytes only in Heroes 1.
-// 0x08    Size     4 bytes
-type File [12]byte
+// 0x00    CRC      4 bytes // TODO: Sequential File ID in Heroes 1?
+// 0x04    Offset   4 bytes // TODO: 2 bytes in Heroes 1
+// 0x08    Size     4 bytes // TODO: 8 bytes in Heroes 1 (two times same number, probably instead of CRC?
+type File [12]byte // TODO: 14 bytes in Heroes 1
 
 func (f File) CRC() int {
 	var crc uint32
