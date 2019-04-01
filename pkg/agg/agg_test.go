@@ -8,17 +8,20 @@ import (
 )
 
 func TestLoadSingleMap(t *testing.T) {
-	file := "./DATA/HEROES2.AGG"
+	for _, file := range []string{
+		"./DATA/HEROES2.AGG",
+		"./DATA/HEROES2X.AGG",
+	} {
+		f, err := os.Open(file)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	f, err := os.Open(file)
-	if err != nil {
-		t.Fatal(err)
+		agg, err := Load(f)
+		if err != nil {
+			t.Fatal(errors.Wrapf(err, "failed to load AGG file %v", file))
+		}
+
+		t.Logf("%v\n", agg)
 	}
-
-	agg, err := Load(f)
-	if err != nil {
-		t.Fatal(errors.Wrapf(err, "failed to load AGG file %v", file))
-	}
-
-	t.Logf("%v\n", agg)
 }
