@@ -68,7 +68,9 @@ func (agg *AGG) Open(name string) (io.ReadSeeker, error) {
 		return nil, os.ErrNotExist
 	}
 
-	offset := file.Offset()
+	// We want position in fileData, and not in the whole file.
+	// Substract the header (2 bytes) and the fileTable (12 bytes each file).
+	offset := file.Offset() - 2 - 12*len(agg.fileTable)
 	return bytes.NewReader(agg.fileData[offset : offset+file.Size()]), nil
 }
 
