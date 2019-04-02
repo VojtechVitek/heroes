@@ -1,6 +1,7 @@
 package agg
 
 import (
+	"image/png"
 	"os"
 	"testing"
 
@@ -48,7 +49,7 @@ func TestLoadPalleteAndIcons(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		_ = Pallete(data)
+		pallete := Pallete(data)
 
 		for _, file := range []string{
 			"GROUND32.TIL",
@@ -57,8 +58,16 @@ func TestLoadPalleteAndIcons(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			groundTiles := Tiles(data)
-			t.Logf("%v\n%v", file, groundTiles)
+
+			img := NewTiles(data, pallete).Image()
+
+			out, err := os.Create("./ground32.png")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := png.Encode(out, img); err != nil {
+				t.Fatal(err)
+			}
 		}
 	}
 }
