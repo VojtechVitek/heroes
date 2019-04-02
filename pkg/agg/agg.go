@@ -74,7 +74,7 @@ func (agg *AGG) Open(name string) (io.ReadSeeker, error) {
 func (agg *AGG) Data(name string) ([]byte, error) {
 	file, ok := agg.fileMap[name]
 	if !ok {
-		return nil, os.ErrNotExist
+		return nil, errors.Wrapf(os.ErrNotExist, "failed to find %v", name)
 	}
 
 	// We want position in fileData, and not in the whole file.

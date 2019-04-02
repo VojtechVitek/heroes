@@ -1,7 +1,6 @@
 package agg
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -45,16 +44,21 @@ func TestLoadPalleteAndIcons(t *testing.T) {
 			t.Fatal(errors.Wrapf(err, "failed to load AGG file %v", file))
 		}
 
-		r, err := agg.Open("KB.PAL")
+		data, err := agg.Data("KB.PAL")
 		if err != nil {
 			t.Fatal(err)
 		}
-
-		data, _ := ioutil.ReadAll(r)
-		t.Logf("size of KB.PAL: %v", len(data))
-		t.Log(data)
-
 		_ = Pallete(data)
 
+		for _, file := range []string{
+			"GROUND32.TIL",
+		} {
+			data, err = agg.Data(file)
+			if err != nil {
+				t.Fatal(err)
+			}
+			groundTiles := Tiles(data)
+			t.Logf("%v\n%v", file, groundTiles)
+		}
 	}
 }
