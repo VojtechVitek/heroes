@@ -49,7 +49,10 @@ func TestLoadPalleteAndIcons(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		pallete := Pallete(data)
+		pallete, err := NewPallete(data)
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		for _, file := range []string{
 			"GROUND32.TIL",
