@@ -63,6 +63,15 @@ func Load(r io.ReadSeeker) (*AGG, error) {
 }
 
 func (agg *AGG) Open(name string) (io.ReadSeeker, error) {
+	data, err := agg.Data(name)
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(data), nil
+}
+
+func (agg *AGG) Data(name string) ([]byte, error) {
 	file, ok := agg.fileMap[name]
 	if !ok {
 		return nil, os.ErrNotExist
@@ -71,7 +80,7 @@ func (agg *AGG) Open(name string) (io.ReadSeeker, error) {
 	// We want position in fileData, and not in the whole file.
 	// Substract the header (2 bytes) and the fileTable (12 bytes each file).
 	offset := file.Offset() - 2 - 12*len(agg.fileTable)
-	return bytes.NewReader(agg.fileData[offset : offset+file.Size()]), nil
+	return agg.fileData[offset : offset+file.Size()], nil
 }
 
 func (agg *AGG) String() string {
