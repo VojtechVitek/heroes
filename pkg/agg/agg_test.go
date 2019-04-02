@@ -53,5 +53,8 @@ func TestLoadPalleteAndIcons(t *testing.T) {
 		data, _ := ioutil.ReadAll(r)
 		t.Logf("size of KB.PAL: %v", len(data))
 		t.Log(data)
+
+		_ = Pallete(data)
+
 	}
 }
