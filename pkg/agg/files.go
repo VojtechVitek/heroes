@@ -35,8 +35,8 @@ func (f File) String() string {
 
 const FilenameLength = 15
 
-type Filename [FilenameLength]byte
+type FileName [FilenameLength]byte
 
-func (f Filename) String() string {
+func (f FileName) String() string {
 	return cstring.String(f[:])
 }
