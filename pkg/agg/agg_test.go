@@ -56,6 +56,8 @@ func TestLoadPalleteAndIcons(t *testing.T) {
 
 		for _, file := range []string{
 			"GROUND32.TIL",
+			"CLOF32.TIL",
+			"STON.TIL",
 		} {
 			data, err = agg.Data(file)
 			if err != nil {
@@ -64,7 +66,7 @@ func TestLoadPalleteAndIcons(t *testing.T) {
 
 			img := NewTiles(data, pallete).Image()
 
-			out, err := os.Create("./ground32.png")
+			out, err := os.Create(file + ".png")
 			if err != nil {
 				t.Fatal(err)
 			}
