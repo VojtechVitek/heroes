@@ -117,11 +117,11 @@ func (icn *ICN) Images() ([]*image.RGBA, error) {
 
 	for _, h := range icn.spriteHeaders {
 		rect := image.Rect(0, 0, h.width, h.height)
-
 		pixels := make([]uint8, 0, 4*h.width*h.height)
-		for i := 0; i < h.width*h.height; i++ {
-			r, g, b := icn.pallete.RGB(icn.data[h.dataAt])
-			pixels = append(pixels, r, g, b, opaqueAlpha)
+
+		parser := &spriteParser{icn.data[h.dataAt:], h.width, icn.pallete, start}
+		for parser.next() {
+			pixels = append(pixels, parser.getPixels()...)
 		}
 
 		images = append(images, &image.RGBA{pixels, 4 * h.width, rect})
