@@ -120,11 +120,6 @@ func (icn *ICN) Images() ([]*image.RGBA, error) {
 
 		pixels := make([]uint8, 0, 4*h.width*h.height)
 		for i := 0; i < h.width*h.height; i++ {
-			// defer func() {
-			// 	if r := recover(); r != nil {
-			// 		panic(fmt.Sprintf("access spritesData[%v] [%v+%v-(%v)]\n", h.dataAt+i-(6+icn.NumSprites*13), h.dataAt, i, (6 + icn.NumSprites*13)))
-			// 	}
-			// }()
 			r, g, b := icn.pallete.RGB(icn.data[h.dataAt])
 			pixels = append(pixels, r, g, b, opaqueAlpha)
 		}
