@@ -11,9 +11,8 @@ import (
 )
 
 // 0x00  Number of sprites         2 bytes
-// 0x02  Data size (headers+data)  4 bytes
-// 0x06  Sprites headers           Number of sprites * 13 bytes
-// 0x??  Sprites data
+// 0x02  Data size                 4 bytes
+// 0x06  Sprites headers + data    Data size
 func NewICN(data []byte, pallete pallete) (*ICN, error) {
 	icn := ICN{
 		pallete: pallete,
@@ -31,10 +30,14 @@ func NewICN(data []byte, pallete pallete) (*ICN, error) {
 	}
 	dataSize := int(u32)
 
-	headerData := data[6 : 6+icn.NumSprites*13]
+	icn.data = data[6:] // Sprites headers + data.
+	if len(icn.data) != dataSize {
+		return nil, errors.Errorf("expected data size %v bytes, got %v bytes", dataSize, len(icn.data))
+	}
+
 	spriteHeaders := make([]*SpriteHeader, 0, icn.NumSprites)
 	for i := 0; i < icn.NumSprites; i++ {
-		header, err := NewSpriteHeader(headerData[i*13 : (i+1)*13])
+		header, err := NewSpriteHeader(icn.data[i*13 : (i+1)*13])
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to parse sprite header")
 		}
@@ -42,19 +45,13 @@ func NewICN(data []byte, pallete pallete) (*ICN, error) {
 	}
 	icn.spriteHeaders = spriteHeaders
 
-	icn.spritesData = data[6+icn.NumSprites*13:]
-
-	if len(icn.spritesData)+len(headerData) != dataSize {
-		return nil, errors.Errorf("expected data size %v bytes, got %v bytes", dataSize, len(icn.spritesData)+len(headerData))
-	}
-
 	return &icn, nil
 }
 
 type ICN struct {
 	NumSprites    int
 	spriteHeaders []*SpriteHeader
-	spritesData   []byte
+	data          []byte
 	pallete       pallete
 }
 
@@ -118,20 +115,21 @@ func NewSpriteHeader(data []byte) (*SpriteHeader, error) {
 func (icn *ICN) Images() ([]*image.RGBA, error) {
 	images := make([]*image.RGBA, 0, icn.NumSprites)
 
-	for i, header := range icn.spriteHeaders {
-		if i > 0 {
-			return images, nil
+	for _, h := range icn.spriteHeaders {
+		rect := image.Rect(0, 0, h.width, h.height)
+
+		pixels := make([]uint8, 0, 4*h.width*h.height)
+		for i := 0; i < h.width*h.height; i++ {
+			// defer func() {
+			// 	if r := recover(); r != nil {
+			// 		panic(fmt.Sprintf("access spritesData[%v] [%v+%v-(%v)]\n", h.dataAt+i-(6+icn.NumSprites*13), h.dataAt, i, (6 + icn.NumSprites*13)))
+			// 	}
+			// }()
+			r, g, b := icn.pallete.RGB(icn.data[h.dataAt])
+			pixels = append(pixels, r, g, b, opaqueAlpha)
 		}
 
-		_ = header
-		//rect := image.Rect(0, 0, width, height*numTiles)
-
-		// pixels := make([]uint8, 0, numTiles*width*height*4)
-		// for i := 0; i < numTiles*width*height; i++ {
-		// 	r, g, b := t.pallete.RGB(data[i])
-		// 	pixels = append(pixels, r, g, b, opaqueAlpha)
-		// }
-
+		images = append(images, &image.RGBA{pixels, 4 * h.width, rect})
 	}
 
 	return images, nil

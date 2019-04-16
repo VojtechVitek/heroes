@@ -47,7 +47,7 @@ func TestLoadICNs(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			t.Log(icn)
+			t.Logf("%+v", icn)
 
 			images, err := icn.Images()
 			if err != nil {
@@ -55,7 +55,7 @@ func TestLoadICNs(t *testing.T) {
 			}
 
 			for i, img := range images {
-				out, err := os.Create(fmt.Sprintf("%v.png", i))
+				out, err := os.Create(fmt.Sprintf("out/%v.png", i))
 				if err != nil {
 					t.Fatal(err)
 				}
