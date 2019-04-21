@@ -117,14 +117,14 @@ func (icn *ICN) Images() ([]*image.RGBA, error) {
 
 	for _, h := range icn.spriteHeaders {
 		rect := image.Rect(0, 0, h.width, h.height)
-		pixels := make([]uint8, 0, 4*h.width*h.height)
 
-		parser := &spriteParser{icn.data[h.dataAt:], h.width, icn.pallete, start}
-		for parser.next() {
-			pixels = append(pixels, parser.getPixels()...)
+		parser := &spriteParser{
+			data:      icn.data[h.dataAt:],
+			lineWidth: h.width,
+			pallete:   icn.pallete,
+			pixels:    make([]uint8, 0, 4*h.width*h.height),
 		}
-
-		images = append(images, &image.RGBA{pixels, 4 * h.width, rect})
+		images = append(images, &image.RGBA{parser.getPixels(), 4 * h.width, rect})
 	}
 
 	return images, nil
