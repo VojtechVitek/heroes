@@ -25,8 +25,8 @@ func (p *spriteParser) getPixels() []uint8 {
 			// Number of pixels to fill with a pallete color.
 			for i := 0; i < int(cmd); i++ {
 				r, g, b := p.pallete.RGB(p.data[pos])
-				p.pixels = append(p.pixels, r, g, b, opaqueAlpha)
 				pos++
+				p.pixels = append(p.pixels, r, g, b, opaqueAlpha)
 			}
 
 		case cmd >= 0x81 && cmd <= 0xBF:
@@ -36,7 +36,7 @@ func (p *spriteParser) getPixels() []uint8 {
 			}
 
 		case cmd == 0xC0:
-			// Number of shadow pixels.
+			// Number (next byte or two) of shadow pixels.
 			var n int
 
 			nextByte := p.data[pos]
@@ -55,10 +55,10 @@ func (p *spriteParser) getPixels() []uint8 {
 
 		case cmd == 0x80:
 			// EOF.
-			break
+			return p.pixels
 
 		case cmd >= 0xC2 && cmd <= 0xFF:
-			// Number of pixels of same color shifted by 0xC0.
+			// Number of pixels of same color (next byte) shifted by 0xC0.
 			n := int(cmd) - 0xC0
 
 			r, g, b := p.pallete.RGB(p.data[pos])
@@ -72,5 +72,4 @@ func (p *spriteParser) getPixels() []uint8 {
 			panic(fmt.Sprintf("unknown cmd 0x%X", cmd))
 		}
 	}
-	return p.pixels
 }
