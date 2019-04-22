@@ -55,6 +55,12 @@ func (p *spriteParser) getPixels() []uint8 {
 
 		case cmd == 0x80:
 			// EOF.
+
+			// Fill in the missing pixels.
+			for i := 0; i < cap(p.pixels)-len(p.pixels); i++ {
+				p.pixels = append(p.pixels, 0, 0, 0, 0x40)
+			}
+
 			return p.pixels
 
 		case cmd >= 0xC2 && cmd <= 0xFF:

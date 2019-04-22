@@ -124,7 +124,8 @@ func (icn *ICN) Images() ([]*image.RGBA, error) {
 			pallete:   icn.pallete,
 			pixels:    make([]uint8, 0, 4*h.width*h.height),
 		}
-		images = append(images, &image.RGBA{parser.getPixels(), 4 * h.width, rect})
+		img := &image.RGBA{parser.getPixels(), 4 * h.width, rect}
+		images = append(images, img)
 	}
 
 	return images, nil
