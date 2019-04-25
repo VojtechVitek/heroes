@@ -34,9 +34,7 @@ func TestLoadICNs(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		for _, file := range []string{
-			"DRAGBLAK.ICN",
-		} {
+		for _, file := range agg.Files("ICN") {
 			data, err = agg.Data(file)
 			if err != nil {
 				t.Fatal(err)
@@ -52,14 +50,14 @@ func TestLoadICNs(t *testing.T) {
 			for i, sprite := range icn.Sprites() {
 				img, err := sprite.RenderImage(pallete)
 				if err != nil {
-					t.Fatal(err)
+					t.Fatal(errors.Wrap(err, "failed to render image"))
 				}
-				out, err := os.Create(fmt.Sprintf("out/%v.png", i))
+				out, err := os.Create(fmt.Sprintf("out/%v-%v.png", file, i))
 				if err != nil {
 					t.Fatal(err)
 				}
 				if err := png.Encode(out, img); err != nil {
-					t.Fatal(err)
+					t.Fatal(errors.Wrap(err, "failed to render into PNG"))
 				}
 			}
 		}

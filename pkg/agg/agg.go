@@ -83,6 +83,16 @@ func (agg *AGG) Data(name string) ([]byte, error) {
 	return agg.fileData[offset : offset+file.Size()], nil
 }
 
+func (agg *AGG) Files(ext string) []string {
+	var files []string
+	for filename, _ := range agg.fileMap {
+		if strings.HasSuffix(strings.ToLower(filename), "."+strings.ToLower(ext)) {
+			files = append(files, filename)
+		}
+	}
+	return files
+}
+
 func (agg *AGG) String() string {
 	var b strings.Builder
 
