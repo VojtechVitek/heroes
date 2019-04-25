@@ -71,8 +71,12 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 	r := bytes.NewReader(s.data)
 	pixels := make([]uint8, 0, 4*s.width*s.height)
 
+	pos := 0
 	nextByte := func() byte {
-		b, _ := r.ReadByte()
+		b, err := r.ReadByte()
+		if err != nil {
+			panic(err)
+		}
 		return b
 	}
 
@@ -82,15 +86,17 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 		switch {
 		case cmd == 0x00:
 			// EOL. Fill the rest of the line with transparent color.
-			// for i := p.pos % s.width; i < s.width; i++ {
-			// 	pixels = append(pixels, 0, 0, 0, 0)
-			// }
+			for i := pos % s.width; i <= s.width; i++ {
+				pixels = append(pixels, 0, 0, 0, 0)
+				pos++
+			}
 
 		case cmd >= 0x01 && cmd <= 0x7F:
 			// Number of pixels to fill with a specific color (next byte) from the pallete.
 			for i := 0; i < int(cmd); i++ {
 				r, g, b := pallete.RGB(nextByte())
 				pixels = append(pixels, r, g, b, opaqueAlpha)
+				pos++
 			}
 
 		case cmd == 0x80:
@@ -99,6 +105,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 			// Fill in the missing pixels.
 			for i := 0; i < cap(pixels)-len(pixels); i++ {
 				pixels = append(pixels, 0, 0, 0, 0)
+				pos++
 			}
 
 			img := &image.RGBA{pixels, 4 * s.width, image.Rect(0, 0, s.width, s.height)}
@@ -108,6 +115,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 			// Number of pixels to skip. Fill with transparent color.
 			for i := 0; i < int(cmd-0x80); i++ {
 				pixels = append(pixels, 0, 0, 0, 0)
+				pos++
 			}
 
 		case cmd == 0xC0:
@@ -119,6 +127,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 
 			for i := 0; i < n; i++ {
 				pixels = append(pixels, 0, 0, 0, 64)
+				pos++
 			}
 
 		case cmd == 0xC1:
@@ -128,6 +137,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 
 			for i := 0; i < n; i++ {
 				pixels = append(pixels, r, g, b, opaqueAlpha)
+				pos++
 			}
 
 		case cmd >= 0xC2 && cmd <= 0xFF:
@@ -138,6 +148,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 
 			for i := 0; i < n; i++ {
 				pixels = append(pixels, r, g, b, opaqueAlpha)
+				pos++
 			}
 
 		default:
