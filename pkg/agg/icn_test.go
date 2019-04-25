@@ -49,12 +49,11 @@ func TestLoadICNs(t *testing.T) {
 
 			t.Logf("%+v", icn)
 
-			images, err := icn.Images()
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			for i, img := range images {
+			for i, sprite := range icn.Sprites() {
+				img, err := sprite.Image(pallete)
+				if err != nil {
+					t.Fatal(err)
+				}
 				out, err := os.Create(fmt.Sprintf("out/%v.png", i))
 				if err != nil {
 					t.Fatal(err)

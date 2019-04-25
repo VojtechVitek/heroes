@@ -12,12 +12,8 @@ import (
 
 // 0x00  Number of sprites         2 bytes
 // 0x02  Data size                 4 bytes
-// 0x06  Sprites headers + data    Data size
+// 0x06  Sprites headers + data    (each header's dataOffset points here)
 func NewICN(data []byte, pallete pallete) (*ICN, error) {
-	icn := ICN{
-		pallete: pallete,
-	}
-
 	var u16 uint16
 	if err := binary.Read(bytes.NewReader(data[0:2]), binary.LittleEndian, &u16); err != nil {
 		return nil, errors.Wrap(err, "failed to read number of sprites")
@@ -30,28 +26,25 @@ func NewICN(data []byte, pallete pallete) (*ICN, error) {
 	}
 	dataSize := int(u32)
 
-	icn.data = data[6:] // Sprites headers + data.
-	if len(icn.data) != dataSize {
-		return nil, errors.Errorf("expected data size %v bytes, got %v bytes", dataSize, len(icn.data))
+	data = data[6:] // Sprites headers + data only. That's what sprite headers offsets reference.
+	if len(data) != dataSize {
+		return nil, errors.Errorf("expected data size %v bytes, got %v bytes", dataSize, len(data))
 	}
 
 	sprites := make([]*Sprite, 0, numSprites)
 	for i := 0; i < numSprites; i++ {
-		header, err := NewSprite(icn.data[i*13 : (i+1)*13])
+		sprite, err := NewSprite(data, i)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to parse sprite header")
+			return nil, errors.Wrap(err, "failed to parse sprite")
 		}
-		sprites = append(sprites, header)
+		sprites = append(sprites, sprite)
 	}
-	icn.sprites = sprites
 
-	return &icn, nil
+	return &ICN{sprites: sprites}, nil
 }
 
 type ICN struct {
 	sprites []*Sprite
-	data    []byte
-	pallete pallete
 }
 
 type Sprite struct {
@@ -60,10 +53,7 @@ type Sprite struct {
 	width  int
 	height int
 	typ    uint8
-	// index int
-	// count int
-	// data []byte
-	dataAt int
+	data   []byte
 }
 
 // 0x00  x                      2 bytes
@@ -72,66 +62,54 @@ type Sprite struct {
 // 0x06  height                 2 bytes
 // 0x08  type                   1 byte
 // 0x09  data offset            4 bytes
-func NewSprite(data []byte) (*Sprite, error) {
-	if len(data) != 13 {
-		return nil, errors.Errorf("expected 13 bytes of sprite header, got %v bytes", len(data))
-	}
-
+func NewSprite(data []byte, index int) (*Sprite, error) {
 	var (
-		h   Sprite
+		s   Sprite
 		s16 int16
 		u16 uint16
 		u32 uint32
 	)
 
-	if err := binary.Read(bytes.NewReader(data[0:2]), binary.LittleEndian, &s16); err != nil {
+	header := data[index*13 : (index+1)*13]
+
+	if err := binary.Read(bytes.NewReader(header[0:2]), binary.LittleEndian, &s16); err != nil {
 		return nil, errors.Wrap(err, "failed to read x")
 	}
-	h.x = int(s16)
+	s.x = int(s16)
 
-	if err := binary.Read(bytes.NewReader(data[2:4]), binary.LittleEndian, &s16); err != nil {
+	if err := binary.Read(bytes.NewReader(header[2:4]), binary.LittleEndian, &s16); err != nil {
 		return nil, errors.Wrap(err, "failed to read y")
 	}
-	h.y = int(s16)
+	s.y = int(s16)
 
-	if err := binary.Read(bytes.NewReader(data[4:6]), binary.LittleEndian, &u16); err != nil {
+	if err := binary.Read(bytes.NewReader(header[4:6]), binary.LittleEndian, &u16); err != nil {
 		return nil, errors.Wrap(err, "failed to read width")
 	}
-	h.width = int(u16)
+	s.width = int(u16)
 
-	if err := binary.Read(bytes.NewReader(data[6:8]), binary.LittleEndian, &u16); err != nil {
+	if err := binary.Read(bytes.NewReader(header[6:8]), binary.LittleEndian, &u16); err != nil {
 		return nil, errors.Wrap(err, "failed to read height")
 	}
-	h.height = int(u16)
+	s.height = int(u16)
 
-	h.typ = uint8(data[9])
+	s.typ = uint8(header[9])
 
-	if err := binary.Read(bytes.NewReader(data[9:13]), binary.LittleEndian, &u32); err != nil {
-		return nil, errors.Wrap(err, "failed to read height")
+	if err := binary.Read(bytes.NewReader(header[9:13]), binary.LittleEndian, &u32); err != nil {
+		return nil, errors.Wrap(err, "failed to read data offset")
 	}
-	h.dataAt = int(u32)
+	dataOffset := int(u32)
 
-	return &h, nil
+	s.data = data[dataOffset:]
+
+	return &s, nil
 }
 
-func (icn *ICN) Images() ([]*image.RGBA, error) {
-	images := make([]*image.RGBA, 0, len(icn.sprites))
+func (icn *ICN) Sprite(index int) *Sprite {
+	return icn.sprites[index]
+}
 
-	for _, h := range icn.sprites {
-		rect := image.Rect(0, 0, h.width, h.height)
-
-		// TODO: 6 bytes is header of the data; u16 count + u32 data size
-		parser := &spriteParser{
-			data:      icn.data[h.dataAt+6:],
-			lineWidth: h.width,
-			pallete:   icn.pallete,
-			pixels:    make([]uint8, 0, 4*h.width*h.height),
-		}
-		img := &image.RGBA{parser.getPixels(), 4 * h.width, rect}
-		images = append(images, img)
-	}
-
-	return images, nil
+func (icn *ICN) Sprites() []*Sprite {
+	return icn.sprites
 }
 
 func (icn *ICN) String() string {
@@ -142,6 +120,30 @@ func (icn *ICN) String() string {
 	for _, header := range icn.sprites {
 		fmt.Fprintf(&b, "%+v\n", header)
 	}
+
+	return b.String()
+}
+
+func (s *Sprite) Image(pallete pallete) (*image.RGBA, error) {
+	rect := image.Rect(0, 0, s.width, s.height)
+
+	parser := &spriteParser{
+		data:      s.data,
+		lineWidth: s.width,
+		pallete:   pallete,
+		pixels:    make([]uint8, 0, 4*s.width*s.height),
+	}
+	img := &image.RGBA{parser.getPixels(), 4 * s.width, rect}
+
+	return img, nil
+}
+
+func (s *Sprite) String() string {
+	var b strings.Builder
+
+	fmt.Fprintf(&b, "x, y = %v, %v\n", s.x, s.y)
+	fmt.Fprintf(&b, "width, height = %v, %v\n", s.width, s.height)
+	fmt.Fprintf(&b, "typ = %v\n", s.typ)
 
 	return b.String()
 }
