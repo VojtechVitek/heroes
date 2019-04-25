@@ -68,20 +68,20 @@ func NewSprite(data []byte, index int) (*Sprite, error) {
 }
 
 func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
-	r := bytes.NewReader(s.data)
-	nextByte := func() byte {
-		b, err := r.ReadByte()
-		if err != nil {
-			panic(err)
-		}
-		return b
-	}
-
 	pixels := make([]uint8, 0, 4*s.width*s.height)
 	pos := 0
 	writePixel := func(r, g, b, a uint8) {
 		pixels = append(pixels, r, g, b, a)
 		pos++
+	}
+
+	r := bytes.NewReader(s.data)
+	nextByte := func() byte {
+		b, err := r.ReadByte()
+		if err != nil {
+			return 0x80 // force EOF
+		}
+		return b
 	}
 
 	for {
