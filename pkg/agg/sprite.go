@@ -86,7 +86,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 		switch {
 		case cmd == 0x00:
 			// EOL. Fill the rest of the line with transparent color.
-			for i := pos % s.width; i <= s.width; i++ {
+			for i := pos % s.width; i < s.width; i++ {
 				pixels = append(pixels, 0, 0, 0, 0)
 				pos++
 			}
