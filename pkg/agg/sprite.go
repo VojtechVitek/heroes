@@ -69,15 +69,19 @@ func NewSprite(data []byte, index int) (*Sprite, error) {
 
 func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 	r := bytes.NewReader(s.data)
-	pixels := make([]uint8, 0, 4*s.width*s.height)
-
-	pos := 0
 	nextByte := func() byte {
 		b, err := r.ReadByte()
 		if err != nil {
 			panic(err)
 		}
 		return b
+	}
+
+	pixels := make([]uint8, 0, 4*s.width*s.height)
+	pos := 0
+	writePixel := func(r, g, b, a uint8) {
+		pixels = append(pixels, r, g, b, a)
+		pos++
 	}
 
 	for {
@@ -90,25 +94,22 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 				break
 			}
 			for i := pos % s.width; i < s.width; i++ {
-				pixels = append(pixels, 0, 0, 0, 0)
-				pos++
+				writePixel(0, 0, 0, 0)
 			}
 
 		case cmd >= 0x01 && cmd <= 0x7F:
 			// Number of pixels to fill with colors (next N bytes) from the pallete.
 			for i := 0; i < int(cmd); i++ {
 				r, g, b := pallete.RGB(nextByte())
-				pixels = append(pixels, r, g, b, opaqueAlpha)
-				pos++
+				writePixel(r, g, b, opaqueAlpha)
 			}
 
 		case cmd == 0x80:
 			// EOF.
 
-			// Fill in the missing pixels with red color.
+			// Fill in the missing pixels with transparent color.
 			for i := 0; i < cap(pixels)-len(pixels); i++ {
-				pixels = append(pixels, 255, 0, 0, opaqueAlpha)
-				pos++
+				writePixel(0, 0, 255, 255)
 			}
 
 			img := &image.RGBA{pixels, 4 * s.width, image.Rect(0, 0, s.width, s.height)}
@@ -117,8 +118,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 		case cmd >= 0x81 && cmd <= 0xBF:
 			// Number of pixels to skip. Fill with transparent color.
 			for i := 0; i < int(cmd-0x80); i++ {
-				pixels = append(pixels, 0, 0, 0, 0)
-				pos++
+				writePixel(0, 0, 0, 0)
 			}
 
 		case cmd == 0xC0:
@@ -129,8 +129,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 			}
 
 			for i := 0; i < n; i++ {
-				pixels = append(pixels, 0, 0, 0, 64)
-				pos++
+				writePixel(0, 0, 0, 64)
 			}
 
 		case cmd == 0xC1:
@@ -139,8 +138,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 			r, g, b := pallete.RGB(nextByte())
 
 			for i := 0; i < n; i++ {
-				pixels = append(pixels, r, g, b, opaqueAlpha)
-				pos++
+				writePixel(r, g, b, opaqueAlpha)
 			}
 
 		case cmd >= 0xC2 && cmd <= 0xFF:
@@ -149,8 +147,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 			r, g, b := pallete.RGB(nextByte())
 
 			for i := 0; i < n; i++ {
-				pixels = append(pixels, r, g, b, opaqueAlpha)
-				pos++
+				writePixel(r, g, b, opaqueAlpha)
 			}
 
 		default:
