@@ -48,7 +48,7 @@ func (t *Tiles) Image() *image.RGBA {
 
 	pixels := make([]uint8, 0, numTiles*width*height*4)
 	for i := 0; i < numTiles*width*height; i++ {
-		r, g, b := t.pallete.RGB(data[i])
+		r, g, b := t.pallete.RGB(int(data[i]))
 		pixels = append(pixels, r, g, b, opaqueAlpha)
 	}
 
