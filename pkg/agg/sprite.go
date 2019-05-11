@@ -100,7 +100,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 		case cmd >= 0x01 && cmd <= 0x7F:
 			// Number of pixels to fill with colors (next N bytes) from the pallete.
 			for i := 0; i < int(cmd); i++ {
-				r, g, b := pallete.RGB(nextByte())
+				r, g, b := pallete.RGB(int(nextByte()))
 				writePixel(r, g, b, opaqueAlpha)
 			}
 
@@ -109,7 +109,8 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 
 			// Fill in the missing pixels with transparent color.
 			for i := 0; i < cap(pixels)-len(pixels); i++ {
-				writePixel(0, 0, 255, 255)
+				pixels = append(pixels, 255,255,255,255)
+				pos++
 			}
 
 			img := &image.RGBA{pixels, 4 * s.width, image.Rect(0, 0, s.width, s.height)}
@@ -135,7 +136,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 		case cmd == 0xC1:
 			// Number (next byte) of pixels to fill with a specific color (second next byte) from the pallete.
 			n := int(nextByte())
-			r, g, b := pallete.RGB(nextByte())
+			r, g, b := pallete.RGB(int(nextByte()))
 
 			for i := 0; i < n; i++ {
 				writePixel(r, g, b, opaqueAlpha)
@@ -144,7 +145,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 		case cmd >= 0xC2 && cmd <= 0xFF:
 			// Number of pixels of same color (next byte) shifted by 0xC0.
 			n := int(cmd) - 0xC0
-			r, g, b := pallete.RGB(nextByte())
+			r, g, b := pallete.RGB(int(nextByte()))
 
 			for i := 0; i < n; i++ {
 				writePixel(r, g, b, opaqueAlpha)
