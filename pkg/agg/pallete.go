@@ -14,11 +14,11 @@ func NewPallete(data []byte) (pallete, error) {
 	return pallete(data), nil
 }
 
-func (p pallete) RGB(index uint8) (r, g, b uint8) {
+func (p pallete) RGB(index int) (r, g, b uint8) {
 	return p.color(index * 3), p.color(index*3 + 1), p.color(index*3 + 2)
 }
 
-func (p pallete) color(c uint8) uint8 {
+func (p pallete) color(c int) uint8 {
 	if c >= 214 && c <= 241 {
 		switch c {
 		case 214, 215, 216, 217:
