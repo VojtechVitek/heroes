@@ -9,10 +9,10 @@ import (
 // Tiles implement image.Image interface.
 //var tiles image.Image = Tiles{}
 
-func NewTiles(data []byte, pallete pallete) *Tiles {
+func NewTiles(data []byte, palette palette) *Tiles {
 	return &Tiles{
 		data:    data,
-		pallete: pallete,
+		palette: palette,
 	}
 }
 
@@ -23,7 +23,7 @@ type Tiles struct {
 	// 0x06  Data
 	data []byte
 
-	pallete pallete
+	palette palette
 }
 
 func (t *Tiles) NumTiles() int   { return t.uint16ToInt(0, 2) }
@@ -48,7 +48,7 @@ func (t *Tiles) Image() *image.RGBA {
 
 	pixels := make([]uint8, 0, numTiles*width*height*4)
 	for i := 0; i < numTiles*width*height; i++ {
-		r, g, b := t.pallete.RGB(int(data[i]))
+		r, g, b := t.palette.RGB(int(data[i]))
 		pixels = append(pixels, r, g, b, opaqueAlpha)
 	}
 

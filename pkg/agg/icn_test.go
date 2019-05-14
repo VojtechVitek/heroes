@@ -2,7 +2,9 @@ package agg
 
 import (
 	"fmt"
-	"image/png"
+	"image"
+	"image/draw"
+	"image/gif"
 	"os"
 	"testing"
 
@@ -29,10 +31,12 @@ func TestLoadICNs(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		pallete, err := NewPallete(data)
+		palette, err := NewPalette(data)
 		if err != nil {
 			t.Fatal(err)
 		}
+
+		gifPalette := palette.RGBPalette()
 
 		for _, file := range agg.Files("ICN") {
 			data, err = agg.Data(file)
@@ -40,25 +44,58 @@ func TestLoadICNs(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			icn, err := NewICN(data, pallete)
+			icn, err := NewICN(data, palette)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			t.Logf("%+v", icn)
+			outGif := &gif.GIF{}
+			sprites := icn.Sprites()
 
-			for i, sprite := range icn.Sprites() {
-				img, err := sprite.RenderImage(pallete)
+			var maxW, maxH, negX, negY int
+			for _, sprite := range sprites {
+				if sprite.Width > maxW {
+					maxW = sprite.Width
+				}
+				if sprite.Width > maxH {
+					maxH = sprite.Width
+				}
+				if sprite.X < negX {
+					negX = sprite.X
+				}
+				if sprite.Y < negY {
+					negY = sprite.Y
+				}
+			}
+
+			for _, sprite := range sprites {
+				if sprite.Width <= 1 && sprite.Height <= 1 {
+					continue
+				}
+
+				img, err := sprite.RenderImage(palette)
 				if err != nil {
 					t.Fatal(errors.Wrap(err, "failed to render image"))
 				}
-				out, err := os.Create(fmt.Sprintf("out/%v-%v.png", file, i))
-				if err != nil {
-					t.Fatal(err)
-				}
-				if err := png.Encode(out, img); err != nil {
-					t.Fatal(errors.Wrap(err, "failed to render into PNG"))
-				}
+
+				palettedImg := image.NewPaletted(image.Rect(0, 0, maxW-negX, maxH-negY), gifPalette)
+				draw.FloydSteinberg.Draw(palettedImg, image.Rect(sprite.X-negX, sprite.Y-negY, sprite.X-negX+sprite.Width, sprite.Y-negY+sprite.Height), img, image.ZP)
+
+				outGif.Image = append(outGif.Image, palettedImg)
+				outGif.Delay = append(outGif.Delay, 20)
+			}
+
+			if len(outGif.Image) <= 1 {
+				continue
+			}
+
+			out, err := os.Create(fmt.Sprintf("out/%v.gif", file))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if err := gif.EncodeAll(out, outGif); err != nil {
+				t.Fatal(err)
 			}
 		}
 	}

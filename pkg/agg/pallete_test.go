@@ -1,10 +1,10 @@
 package agg
 
 import (
+	"image"
 	"image/png"
 	"os"
 	"testing"
-"image"
 
 	"github.com/pkg/errors"
 )
@@ -29,24 +29,24 @@ func TestLoadPallete(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		pallete, err := NewPallete(data)
+		pallete, err := NewPalette(data)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		pixels := make([]uint8, 0, 4*256)
-		for i:=0;i<=255;i++ {
-			r,g,b:=pallete.RGB(i)                    
+		for i := 0; i <= 255; i++ {
+			r, g, b := pallete.RGB(i)
 			pixels = append(pixels, r, g, b, 255)
 		}
 
-		img := &image.RGBA{pixels, 4 * 16, image.Rect(0, 0, 16,16)}
+		img := &image.RGBA{pixels, 4 * 16, image.Rect(0, 0, 16, 16)}
 		out, err := os.Create("pallete.png")
-			if err != nil {
-				t.Fatal(err)
-			}
-			if err := png.Encode(out, img); err != nil {
-				t.Fatal(err)
-			}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := png.Encode(out, img); err != nil {
+			t.Fatal(err)
+		}
 	}
 }

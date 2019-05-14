@@ -11,10 +11,10 @@ import (
 )
 
 type Sprite struct {
-	x      int
-	y      int
-	width  int
-	height int
+	X      int
+	Y      int
+	Width  int
+	Height int
 	typ    uint8
 	data   []byte
 }
@@ -38,22 +38,22 @@ func NewSprite(data []byte, index int) (*Sprite, error) {
 	if err := binary.Read(bytes.NewReader(header[0:2]), binary.LittleEndian, &s16); err != nil {
 		return nil, errors.Wrap(err, "failed to read x")
 	}
-	s.x = int(s16)
+	s.X = int(s16)
 
 	if err := binary.Read(bytes.NewReader(header[2:4]), binary.LittleEndian, &s16); err != nil {
 		return nil, errors.Wrap(err, "failed to read y")
 	}
-	s.y = int(s16)
+	s.Y = int(s16)
 
 	if err := binary.Read(bytes.NewReader(header[4:6]), binary.LittleEndian, &u16); err != nil {
 		return nil, errors.Wrap(err, "failed to read width")
 	}
-	s.width = int(u16)
+	s.Width = int(u16)
 
 	if err := binary.Read(bytes.NewReader(header[6:8]), binary.LittleEndian, &u16); err != nil {
 		return nil, errors.Wrap(err, "failed to read height")
 	}
-	s.height = int(u16)
+	s.Height = int(u16)
 
 	s.typ = uint8(header[9])
 
@@ -67,8 +67,8 @@ func NewSprite(data []byte, index int) (*Sprite, error) {
 	return &s, nil
 }
 
-func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
-	pixels := make([]uint8, 0, 4*s.width*s.height)
+func (s *Sprite) RenderImage(palette palette) (*image.RGBA, error) {
+	pixels := make([]uint8, 0, 4*s.Width*s.Height)
 	pos := 0
 	writePixel := func(r, g, b, a uint8) {
 		pixels = append(pixels, r, g, b, a)
@@ -90,17 +90,17 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 		switch {
 		case cmd == 0x00:
 			// EOL. Fill the rest of the line with transparent color.
-			if pos%s.width == 0 {
+			if pos%s.Width == 0 {
 				break
 			}
-			for i := pos % s.width; i < s.width; i++ {
+			for i := pos % s.Width; i < s.Width; i++ {
 				writePixel(0, 0, 0, 0)
 			}
 
 		case cmd >= 0x01 && cmd <= 0x7F:
-			// Number of pixels to fill with colors (next N bytes) from the pallete.
+			// Number of pixels to fill with colors (next N bytes) from the palette.
 			for i := 0; i < int(cmd); i++ {
-				r, g, b := pallete.RGB(int(nextByte()))
+				r, g, b := palette.RGB(int(nextByte()))
 				writePixel(r, g, b, opaqueAlpha)
 			}
 
@@ -108,12 +108,13 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 			// EOF.
 
 			// Fill in the missing pixels with transparent color.
-			for i := 0; i < cap(pixels)-len(pixels); i++ {
-				pixels = append(pixels, 255,255,255,255)
+			fillIn := cap(pixels) - len(pixels)
+			for i := 0; i < fillIn; i++ {
+				pixels = append(pixels, 0)
 				pos++
 			}
 
-			img := &image.RGBA{pixels, 4 * s.width, image.Rect(0, 0, s.width, s.height)}
+			img := &image.RGBA{pixels, 4 * s.Width, image.Rect(0, 0, s.Width, s.Height)}
 			return img, nil
 
 		case cmd >= 0x81 && cmd <= 0xBF:
@@ -134,9 +135,9 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 			}
 
 		case cmd == 0xC1:
-			// Number (next byte) of pixels to fill with a specific color (second next byte) from the pallete.
+			// Number (next byte) of pixels to fill with a specific color (second next byte) from the palette.
 			n := int(nextByte())
-			r, g, b := pallete.RGB(int(nextByte()))
+			r, g, b := palette.RGB(int(nextByte()))
 
 			for i := 0; i < n; i++ {
 				writePixel(r, g, b, opaqueAlpha)
@@ -145,7 +146,7 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 		case cmd >= 0xC2 && cmd <= 0xFF:
 			// Number of pixels of same color (next byte) shifted by 0xC0.
 			n := int(cmd) - 0xC0
-			r, g, b := pallete.RGB(int(nextByte()))
+			r, g, b := palette.RGB(int(nextByte()))
 
 			for i := 0; i < n; i++ {
 				writePixel(r, g, b, opaqueAlpha)
@@ -160,8 +161,8 @@ func (s *Sprite) RenderImage(pallete pallete) (*image.RGBA, error) {
 func (s *Sprite) String() string {
 	var b strings.Builder
 
-	fmt.Fprintf(&b, "x, y = %v, %v\n", s.x, s.y)
-	fmt.Fprintf(&b, "width, height = %v, %v\n", s.width, s.height)
+	fmt.Fprintf(&b, "x, y = %v, %v\n", s.X, s.Y)
+	fmt.Fprintf(&b, "width, height = %v, %v\n", s.Width, s.Height)
 	fmt.Fprintf(&b, "typ = %v\n", s.typ)
 
 	return b.String()

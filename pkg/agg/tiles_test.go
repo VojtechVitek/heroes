@@ -28,7 +28,7 @@ func TestLoadMapTiles(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		pallete, err := NewPallete(data)
+		pallete, err := NewPalette(data)
 		if err != nil {
 			t.Fatal(err)
 		}
