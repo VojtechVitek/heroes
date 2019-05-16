@@ -1,6 +1,7 @@
 package mp2
 
 import (
+	"fmt"
 	"image"
 	"image/draw"
 	"image/png"
@@ -83,41 +84,53 @@ func TestLoadSingleMap(t *testing.T) {
 		}
 	}
 
-	//file := "./maps/THEOTHER.MP2"
-	//file := "./maps/PANDAMON.MP2"
-	file := "./maps/SLUGFEST.MP2"
+	var mapFiles []string
 
-	f, err := os.Open(file)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	m, err := LoadMap(f)
-	if err != nil {
-		t.Fatal(errors.Wrapf(err, "failed to load map %v", file))
-	}
-
-	//t.Logf("%v\n%v", file, m.Header)
-	//t.Log("tiles:", m.Tiles)
-
-	width, height := m.Width(), m.Height()
-	rect := image.Rect(0, 0, width*tileWidth, height*tileHeight)
-	img := image.NewRGBA(rect)
-
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
-			tileIndex := m.Tiles[x*width+y].TileIndex
-			t.Logf("drawing tile %4v", tileIndex)
-			draw.Draw(img, image.Rect(x*width, y*height, (x+1)*width, (y+1)*height), tiles[tileIndex], image.Point{0, 0}, draw.Src)
+	dir, _ := os.Getwd()
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		filenameLower := strings.ToLower(filepath.Base(path))
+		if strings.HasSuffix(filenameLower, ".mp2") || strings.HasSuffix(filenameLower, ".mx2") {
+			mapFiles = append(mapFiles, path)
 		}
-		t.Log()
-	}
-
-	out, err := os.Create("map.png")
+		return nil
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := png.Encode(out, img); err != nil {
-		t.Fatal(err)
+
+	for _, file := range mapFiles {
+		f, err := os.Open(file)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		m, err := LoadMap(f)
+		if err != nil {
+			t.Fatal(errors.Wrapf(err, "failed to load map %v", file))
+		}
+
+		//t.Logf("%v\n%v", file, m.Header)
+		//t.Log("tiles:", m.Tiles)
+
+		width, height := m.Width(), m.Height()
+		rect := image.Rect(0, 0, width*tileWidth, height*tileHeight)
+		img := image.NewRGBA(rect)
+
+		for x := 0; x < width; x++ {
+			for y := 0; y < height; y++ {
+				tileIndex := m.Tiles[x*width+y].TileIndex
+				t.Logf("drawing tile %4v", tileIndex)
+				draw.Draw(img, image.Rect(x*width, y*height, (x+1)*width, (y+1)*height), tiles[tileIndex], image.Point{0, 0}, draw.Src)
+			}
+			t.Log()
+		}
+
+		out, err := os.Create(fmt.Sprintf("out/%v.png", filepath.Base(file)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := png.Encode(out, img); err != nil {
+			t.Fatal(err)
+		}
 	}
 }
