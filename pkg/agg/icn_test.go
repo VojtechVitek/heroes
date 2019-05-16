@@ -36,7 +36,7 @@ func TestLoadICNs(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		gifPalette := palette.RGBPalette()
+		gifPalette := palette.GifPalette()
 
 		for _, file := range agg.Files("ICN") {
 			data, err = agg.Data(file)
@@ -82,7 +82,7 @@ func TestLoadICNs(t *testing.T) {
 				draw.FloydSteinberg.Draw(palettedImg, image.Rect(sprite.X-negX, sprite.Y-negY, sprite.X-negX+sprite.Width, sprite.Y-negY+sprite.Height), img, image.ZP)
 
 				outGif.Image = append(outGif.Image, palettedImg)
-				outGif.Delay = append(outGif.Delay, 20)
+				outGif.Delay = append(outGif.Delay, 15)
 			}
 
 			if len(outGif.Image) <= 1 {

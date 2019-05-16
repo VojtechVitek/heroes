@@ -37,11 +37,17 @@ func (p palette) color(c int) uint8 {
 	return p[c] << 2 // The palette is dark, need to multiply by 4 to get the real color.
 }
 
-func (p palette) RGBPalette() color.Palette {
-	palette := make(color.Palette, 0, 256)
+func (p palette) GifPalette() color.Palette {
+	palette := color.Palette{}
+	uniq := map[color.RGBA]struct{}{}
 	for i := 0; i <= 255; i++ {
 		r, g, b := p.RGB(i)
-		palette = append(palette, color.RGBA{r, g, b, 255})
+		c := color.RGBA{r, g, b, 255}
+		if _, ok := uniq[c]; !ok {
+			palette = append(palette, c)
+			uniq[c] = struct{}{}
+		}
 	}
+
 	return palette
 }
