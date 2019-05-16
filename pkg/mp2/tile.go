@@ -41,11 +41,17 @@ func (t Tiles) String() string {
 	width := int(math.Sqrt(float64(len(t))))
 
 	for x := 0; x < width; x++ {
-		fmt.Fprintf(&b, "%v:\n", x)
-
 		for y := 0; y < width; y++ {
-			fmt.Fprintf(&b, "%8v ", t[x*width+y].GeneralObject.String())
+			fmt.Fprintf(&b, "%4v", t[x*width+y].TileIndex)
 		}
+		fmt.Fprintln(&b)
+		// for y := 0; y < width; y++ {
+
+		//fmt.Fprintf(&b, "%v:\n", x)
+
+		// for y := 0; y < width; y++ {
+		// 	fmt.Fprintf(&b, "%8v ", t[x*width+y].GeneralObject.String())
+		// }
 		// fmt.Fprintf(&b, "\n")
 		// for y := 0; y < width; y++ {
 		// 	fmt.Fprintf(&b, "%v ", t[x*width+y].ObjectName1)
