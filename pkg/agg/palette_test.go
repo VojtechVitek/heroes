@@ -29,19 +29,19 @@ func TestLoadPallete(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		pallete, err := NewPalette(data)
+		palette, err := NewPalette(data)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		pixels := make([]uint8, 0, 4*256)
 		for i := 0; i <= 255; i++ {
-			r, g, b := pallete.RGB(i)
+			r, g, b := palette.RGB(i)
 			pixels = append(pixels, r, g, b, 255)
 		}
 
 		img := &image.RGBA{pixels, 4 * 16, image.Rect(0, 0, 16, 16)}
-		out, err := os.Create("pallete.png")
+		out, err := os.Create("palette.png")
 		if err != nil {
 			t.Fatal(err)
 		}

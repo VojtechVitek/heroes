@@ -29,7 +29,7 @@ func TestLoadMapTiles(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		pallete, err := NewPalette(data)
+		palette, err := NewPalette(data)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -44,7 +44,7 @@ func TestLoadMapTiles(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			imgs := NewTiles(data, pallete).Images()
+			imgs := NewTiles(data, palette).Images()
 
 			for i, img := range imgs {
 				out, err := os.Create(fmt.Sprintf("out/%v.%v.png", file, i))
