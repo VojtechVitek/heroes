@@ -38,7 +38,7 @@ func (t *Tiles) uint16ToInt(from, to int) int {
 
 const opaqueAlpha = uint8(255)
 
-func (t *Tiles) Images() []*image.RGBA {
+func (t *Tiles) Images() []image.Image {
 	data := t.data[6:] // Pixels only, strip off the header.
 
 	numTiles := t.NumTiles()
@@ -55,7 +55,7 @@ func (t *Tiles) Images() []*image.RGBA {
 
 	rect := image.Rect(0, 0, width, height)
 
-	imgs := make([]*image.RGBA, 0, numTiles)
+	imgs := make([]image.Image, 0, numTiles)
 	for i := 0; i < numTiles; i++ {
 		img := &image.RGBA{pixels[i*width*height*4 : (i+1)*width*height*4], 4 * width, rect}
 		imgs = append(imgs, img)
