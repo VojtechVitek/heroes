@@ -38,19 +38,28 @@ func (t *Tiles) uint16ToInt(from, to int) int {
 
 const opaqueAlpha = uint8(255)
 
-func (t *Tiles) Image() *image.RGBA {
+func (t *Tiles) Images() []*image.RGBA {
 	data := t.data[6:] // Pixels only, strip off the header.
 
 	numTiles := t.NumTiles()
 	width := t.TileWidth()
 	height := t.TileHeight()
-	rect := image.Rect(0, 0, width, height*numTiles)
 
+	// Collect all pixels at once.
+	// TODO: Why don't we use a custom image.PalettedImage and defer the .RGBA() call for later?
 	pixels := make([]uint8, 0, numTiles*width*height*4)
 	for i := 0; i < numTiles*width*height; i++ {
 		r, g, b := t.palette.RGB(int(data[i]))
 		pixels = append(pixels, r, g, b, opaqueAlpha)
 	}
 
-	return &image.RGBA{pixels, 4 * width, rect}
+	rect := image.Rect(0, 0, width, height)
+
+	imgs := make([]*image.RGBA, 0, numTiles)
+	for i := 0; i < numTiles; i++ {
+		img := &image.RGBA{pixels[i*width*height*4 : (i+1)*width*height*4], 4 * width, rect}
+		imgs = append(imgs, img)
+	}
+
+	return imgs
 }

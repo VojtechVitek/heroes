@@ -1,6 +1,7 @@
 package agg
 
 import (
+	"fmt"
 	"image/png"
 	"os"
 	"testing"
@@ -43,14 +44,17 @@ func TestLoadMapTiles(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			img := NewTiles(data, pallete).Image()
+			imgs := NewTiles(data, pallete).Images()
 
-			out, err := os.Create(file + ".png")
-			if err != nil {
-				t.Fatal(err)
-			}
-			if err := png.Encode(out, img); err != nil {
-				t.Fatal(err)
+			for i, img := range imgs {
+				out, err := os.Create(fmt.Sprintf("out/%v.%v.png", file, i))
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err := png.Encode(out, img); err != nil {
+					t.Fatal(err)
+				}
+				out.Close()
 			}
 		}
 	}
