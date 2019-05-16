@@ -99,6 +99,9 @@ func TestLoadSingleMap(t *testing.T) {
 	}
 
 	for _, file := range mapFiles {
+		if !strings.HasSuffix(file, "Europe.mp2") {
+			continue
+		}
 		f, err := os.Open(file)
 		if err != nil {
 			t.Fatal(err)
@@ -112,17 +115,15 @@ func TestLoadSingleMap(t *testing.T) {
 		//t.Logf("%v\n%v", file, m.Header)
 		//t.Log("tiles:", m.Tiles)
 
-		width, height := m.Width(), m.Height()
-		rect := image.Rect(0, 0, width*tileWidth, height*tileHeight)
+		mapWidth, mapHeight := m.Width(), m.Height()
+		rect := image.Rect(0, 0, mapWidth*tileWidth, mapHeight*tileHeight)
 		img := image.NewRGBA(rect)
 
-		for x := 0; x < width; x++ {
-			for y := 0; y < height; y++ {
-				tileIndex := m.Tiles[x*width+y].TileIndex
-				t.Logf("drawing tile %4v", tileIndex)
-				draw.Draw(img, image.Rect(x*width, y*height, (x+1)*width, (y+1)*height), tiles[tileIndex], image.Point{0, 0}, draw.Src)
+		for x := 0; x < mapWidth; x++ {
+			for y := 0; y < mapHeight; y++ {
+				tileIndex := m.Tiles[x*mapWidth+y].TileIndex
+				draw.Draw(img, image.Rect(y*tileWidth, x*tileHeight, (y+1)*tileWidth, (x+1)*tileHeight), tiles[tileIndex], image.Point{0, 0}, draw.Src)
 			}
-			t.Log()
 		}
 
 		out, err := os.Create(fmt.Sprintf("out/%v.png", filepath.Base(file)))
