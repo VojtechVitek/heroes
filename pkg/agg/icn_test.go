@@ -5,13 +5,14 @@ import (
 	"image"
 	"image/draw"
 	"image/gif"
+	"image/png"
 	"os"
 	"testing"
 
 	"github.com/pkg/errors"
 )
 
-func TestLoadICNs(t *testing.T) {
+func TestRenderICNs(t *testing.T) {
 	t.Parallel()
 
 	for _, file := range []string{
@@ -98,5 +99,64 @@ func TestLoadICNs(t *testing.T) {
 				t.Fatal(err)
 			}
 		}
+	}
+}
+
+func TestRenderWindmill(t *testing.T) {
+	t.Parallel()
+
+	for _, file := range []string{
+		"./DATA/HEROES2.AGG",
+	} {
+		f, err := os.Open(file)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		agg, err := Load(f)
+		if err != nil {
+			t.Fatal(errors.Wrapf(err, "failed to load AGG file %v", file))
+		}
+
+		data, err := agg.Data("KB.PAL")
+		if err != nil {
+			t.Fatal(err)
+		}
+		palette, err := NewPalette(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		file := "OBJNGRA2.ICN"
+		data, err = agg.Data(file)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		icn, err := NewICN(data, palette)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		sprites := icn.Sprites()
+
+		sprites = sprites[39:62]
+
+		for i, sprite := range sprites {
+			img, err := sprite.RenderImage(palette)
+			if err != nil {
+				t.Fatal(errors.Wrap(err, "failed to render image"))
+			}
+
+			out, err := os.Create(fmt.Sprintf("out/%v.%v.gif", file, i))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if err := png.Encode(out, img); err != nil {
+				t.Fatal(err)
+			}
+		}
+
 	}
 }

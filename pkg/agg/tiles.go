@@ -6,13 +6,9 @@ import (
 	"image"
 )
 
-// Tiles implement image.Image interface.
-//var tiles image.Image = Tiles{}
-
-func NewTiles(data []byte, palette palette) *Tiles {
+func NewTiles(data []byte) *Tiles {
 	return &Tiles{
-		data:    data,
-		palette: palette,
+		data: data,
 	}
 }
 
@@ -22,8 +18,6 @@ type Tiles struct {
 	// 0x04  Tile height      2 bytes
 	// 0x06  Data
 	data []byte
-
-	palette palette
 }
 
 func (t *Tiles) NumTiles() int   { return t.uint16ToInt(0, 2) }
@@ -38,7 +32,7 @@ func (t *Tiles) uint16ToInt(from, to int) int {
 
 const opaqueAlpha = uint8(255)
 
-func (t *Tiles) Images() []image.Image {
+func (t *Tiles) Images(palette palette) []image.Image {
 	data := t.data[6:] // Pixels only, strip off the header.
 
 	numTiles := t.NumTiles()
@@ -49,7 +43,7 @@ func (t *Tiles) Images() []image.Image {
 	// TODO: Why don't we use a custom image.PalettedImage and defer the .RGBA() call for later?
 	pixels := make([]uint8, 0, numTiles*width*height*4)
 	for i := 0; i < numTiles*width*height; i++ {
-		r, g, b := t.palette.RGB(int(data[i]))
+		r, g, b := palette.RGB(int(data[i]))
 		pixels = append(pixels, r, g, b, opaqueAlpha)
 	}
 

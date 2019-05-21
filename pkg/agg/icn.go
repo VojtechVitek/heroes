@@ -16,7 +16,7 @@ type ICN struct {
 // 0x00  Number of sprites         2 bytes
 // 0x02  Data size                 4 bytes
 // 0x06  Sprites headers + data    (each header's dataOffset points here)
-func NewICN(data []byte, palette palette) (*ICN, error) {
+func NewICN(data []byte) (*ICN, error) {
 	var u16 uint16
 	if err := binary.Read(bytes.NewReader(data[0:2]), binary.LittleEndian, &u16); err != nil {
 		return nil, errors.Wrap(err, "failed to read number of sprites")

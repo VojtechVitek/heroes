@@ -3,6 +3,7 @@ package mp2
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"image/draw"
 	"image/png"
 	"os"
@@ -14,6 +15,9 @@ import (
 	"github.com/VojtechVitek/heroes/pkg/agg"
 	"github.com/disintegration/imaging"
 	"github.com/pkg/errors"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/basicfont"
+	"golang.org/x/image/math/fixed"
 )
 
 func TestLoadMapsHeader(t *testing.T) {
@@ -45,9 +49,10 @@ func TestLoadMapsHeader(t *testing.T) {
 	}
 }
 
-func TestLoadSingleMap(t *testing.T) {
+func TestRenderMap(t *testing.T) {
 	var tileWidth, tileHeight int
 	var tiles []image.Image
+	var windmill image.Image
 
 	for _, file := range []string{
 		"../agg/DATA/HEROES2.AGG",
@@ -71,17 +76,33 @@ func TestLoadSingleMap(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		for _, file := range []string{
-			"GROUND32.TIL",
-		} {
-			data, err = aggFile.Data(file)
+		{
+			data, err = aggFile.Data("GROUND32.TIL")
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			allTiles := agg.NewTiles(data, palette)
-			tiles = allTiles.Images()
+			allTiles := agg.NewTiles(data)
+			tiles = allTiles.Images(palette)
 			tileWidth, tileHeight = allTiles.TileWidth(), allTiles.TileHeight()
+		}
+
+		{
+			data, err := aggFile.Data("OBJNGRA2.ICN")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			icn, err := agg.NewICN(data)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			windmill, err = icn.Sprites()[39+16].RenderImage(palette)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_ = windmill
 		}
 	}
 
@@ -115,41 +136,62 @@ func TestLoadSingleMap(t *testing.T) {
 
 		mapWidth, mapHeight := m.Width(), m.Height()
 		rect := image.Rect(0, 0, mapWidth*tileWidth, mapHeight*tileHeight)
-		img := image.NewRGBA(rect)
+		mapImg := image.NewRGBA(rect)
 
-		var b strings.Builder
-		for x := 0; x < mapWidth; x++ {
-			for y := 0; y < mapHeight; y++ {
+		// var b strings.Builder
+		for y := 0; y < mapHeight; y++ {
+			for x := 0; x < mapWidth; x++ {
+				drawRect := image.Rect(x*tileWidth, y*tileHeight, (x+1)*tileWidth, (y+1)*tileHeight)
+				tile := m.Tiles[y*mapWidth+x]
 
-				fmt.Fprintf(&b, "%4v ", m.Tiles[x*mapWidth+y].Shape)
+				img := tiles[tile.TileIndex]
 
-				drawRect := image.Rect(y*tileWidth, x*tileHeight, (y+1)*tileWidth, (x+1)*tileHeight)
-				tileIndex := m.Tiles[x*mapWidth+y].TileIndex
-				tile := tiles[tileIndex]
-
-				switch m.Tiles[x*mapWidth+y].Shape % 4 {
+				switch tile.Shape % 4 {
 				case 1: // vertical flip
-					tile = imaging.FlipV(tile)
+					img = imaging.FlipV(img)
 				case 2: // horizontal flip
-					tile = imaging.FlipH(tile)
+					img = imaging.FlipH(img)
 				case 3: // vertical+horizontal flip
-					tile = imaging.FlipV(tile)
-					tile = imaging.FlipH(tile)
+					img = imaging.FlipV(img)
+					img = imaging.FlipH(img)
 				}
-
-				draw.Draw(img, drawRect, tile, image.Point{0, 0}, draw.Src)
+				draw.Draw(mapImg, drawRect, img, image.Point{0, 0}, draw.Src)
 			}
-			fmt.Fprintln(&b)
 		}
 
-		t.Log(b.String())
+		for y := 0; y < mapHeight; y++ {
+			for x := 0; x < mapWidth; x++ {
+				tile := m.Tiles[y*mapWidth+x]
+				_ = tile
+				// switch obj {
+				// case Windmill:
+				addLabel(mapImg, x*tileWidth, y*tileHeight+tileHeight, fmt.Sprintf("%v", tile.UniqueNumber1))
+				//				}
+			}
+			// fmt.Fprintln(&b)
+		}
+
+		// t.Log(b.String())
 
 		out, err := os.Create(fmt.Sprintf("out/%v.png", filepath.Base(file)))
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := png.Encode(out, img); err != nil {
+		if err := png.Encode(out, mapImg); err != nil {
 			t.Fatal(err)
 		}
 	}
+}
+
+func addLabel(img *image.RGBA, x, y int, label string) {
+	col := color.RGBA{255, 255, 255, 255}
+	point := fixed.Point26_6{fixed.Int26_6(x * 64), fixed.Int26_6(y * 64)}
+
+	d := &font.Drawer{
+		Dst:  img,
+		Src:  image.NewUniform(col),
+		Face: basicfont.Face7x13,
+		Dot:  point,
+	}
+	d.DrawString(label)
 }
