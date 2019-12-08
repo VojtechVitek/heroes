@@ -8,58 +8,66 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[AlchemyLab-1]
+	_ = x[_alchemyLab-1]
 	_ = x[Skeleton-4]
 	_ = x[DaemonCave-5]
 	_ = x[FaerieRing-7]
 	_ = x[Gazebo-10]
-	_ = x[Graveyard-12]
+	_ = x[_graveyard-12]
 	_ = x[ArchersHouse-13]
 	_ = x[DwarfCottage-15]
 	_ = x[PeasantHut-16]
 	_ = x[DragonCity-20]
-	_ = x[LightHouse-21]
+	_ = x[_lightHouse-21]
 	_ = x[WaterWheel-22]
-	_ = x[Mines-23]
-	_ = x[Obelisk-25]
+	_ = x[_mines-23]
+	_ = x[_obelisk-25]
 	_ = x[Oasis-26]
-	_ = x[Sawmill-29]
+	_ = x[k8s-28]
+	_ = x[_sawmill-29]
 	_ = x[Oracle-30]
-	_ = x[ShipWreck-32]
+	_ = x[_shipWreck-32]
 	_ = x[DesertTent-34]
-	_ = x[Castle-35]
+	_ = x[_castleBottom-35]
 	_ = x[StoneLights-36]
-	_ = x[WagonCamp-37]
-	_ = x[Windmill-40]
-	_ = x[RandomTown-48]
-	_ = x[RandomCastle-49]
+	_ = x[_wagonCamp-37]
+	_ = x[_windmill-40]
+	_ = x[RandTown-48]
+	_ = x[RandCastle-49]
+	_ = x[_bush-56]
 	_ = x[WatchTower-58]
 	_ = x[TreeHouse-59]
 	_ = x[TreeCity-60]
 	_ = x[Ruins-61]
 	_ = x[Fort-62]
-	_ = x[TradingPost-63]
+	_ = x[_tradingPost-63]
 	_ = x[AbandonedMine-64]
 	_ = x[TreeOfKnowledge-68]
 	_ = x[DoctorHut-69]
 	_ = x[Temple-70]
 	_ = x[HillFort-71]
 	_ = x[HalflingHole-72]
-	_ = x[MercenaryCamp-73]
+	_ = x[_mercenaryCamp-73]
 	_ = x[Pyramid-76]
 	_ = x[CityOfTheDead-77]
 	_ = x[Excavation-78]
 	_ = x[Sphinx-79]
 	_ = x[ArtesianSpring-82]
 	_ = x[TrollBridge-83]
-	_ = x[WitchsHut-85]
+	_ = x[_pondUpper-84]
+	_ = x[_witchsHutMiddle-85]
 	_ = x[Xanadu-86]
 	_ = x[Cave-87]
 	_ = x[MagellansMaps-89]
 	_ = x[DerelictShip-91]
 	_ = x[MagicWell-94]
 	_ = x[ObservationTower-96]
-	_ = x[FreemansFoundry-97]
+	_ = x[_golemFreemansFoundry-97]
+	_ = x[Forest-99]
+	_ = x[Mountains-100]
+	_ = x[flower-102]
+	_ = x[stoneInWater-103]
+	_ = x[DeadTree-106]
 	_ = x[Arena-114]
 	_ = x[BarrowMounds-115]
 	_ = x[Mermaid-116]
@@ -67,89 +75,165 @@ func _() {
 	_ = x[HutMagi-118]
 	_ = x[EyeMagi-119]
 	_ = x[TravellerTent-120]
+	_ = x[_syrens-122]
 	_ = x[Jail-123]
 	_ = x[FireAltar-124]
 	_ = x[AirAltar-125]
 	_ = x[EarthAltar-126]
 	_ = x[WaterAltar-127]
+	_ = x[AlchemyLab-129]
+	_ = x[Chest-134]
+	_ = x[FirePit-136]
+	_ = x[Fountain-137]
+	_ = x[Graveyard-140]
+	_ = x[slam-142]
+	_ = x[LightHouse-149]
+	_ = x[Mines-151]
+	_ = x[Obelisk-153]
+	_ = x[RandResource-155]
+	_ = x[Sawmill-157]
+	_ = x[ShipWreck-160]
+	_ = x[WagonCamp-165]
+	_ = x[Windmill-168]
+	_ = x[Ship-171]
+	_ = x[TownGate-177]
+	_ = x[RandC1-179]
+	_ = x[RandC2-180]
+	_ = x[RandC3Nature-181]
+	_ = x[RandDragon-182]
+	_ = x[TradingPost-191]
+	_ = x[Stonehenge-194]
+	_ = x[MercenaryCamp-201]
+	_ = x[GinHouse-202]
+	_ = x[Pond-212]
+	_ = x[WitchsHut-213]
+	_ = x[Wood-218]
+	_ = x[drawnManHoldingWood-220]
+	_ = x[Well-222]
+	_ = x[Mushroom-223]
+	_ = x[GolemHouse-225]
 	_ = x[AlchemyTower-234]
 	_ = x[Stables-235]
+	_ = x[RandChest-244]
+	_ = x[Syrens-250]
 }
 
-const _Object_name = "AlchemyLabSkeletonDaemonCaveFaerieRingGazeboGraveyardArchersHouseDwarfCottagePeasantHutDragonCityLightHouseWaterWheelMinesObeliskOasisSawmillOracleShipWreckDesertTentCastleStoneLightsWagonCampWindmillRandomTownRandomCastleWatchTowerTreeHouseTreeCityRuinsFortTradingPostAbandonedMineTreeOfKnowledgeDoctorHutTempleHillFortHalflingHoleMercenaryCampPyramidCityOfTheDeadExcavationSphinxArtesianSpringTrollBridgeWitchsHutXanaduCaveMagellansMapsDerelictShipMagicWellObservationTowerFreemansFoundryArenaBarrowMoundsMermaidSirensHutMagiEyeMagiTravellerTentJailFireAltarAirAltarEarthAltarWaterAltarAlchemyTowerStables"
+const _Object_name = "_alchemyLabSkeletonDaemonCaveFaerieRingGazebo_graveyardArchersHouseDwarfCottagePeasantHutDragonCity_lightHouseWaterWheel_mines_obeliskOasisk8s_sawmillOracle_shipWreckDesertTent_castleBottomStoneLights_wagonCamp_windmillRandTownRandCastle_bushWatchTowerTreeHouseTreeCityRuinsFort_tradingPostAbandonedMineTreeOfKnowledgeDoctorHutTempleHillFortHalflingHole_mercenaryCampPyramidCityOfTheDeadExcavationSphinxArtesianSpringTrollBridge_pondUpper_witchsHutMiddleXanaduCaveMagellansMapsDerelictShipMagicWellObservationTower_golemFreemansFoundryForestMountainsflowerstoneInWaterDeadTreeArenaBarrowMoundsMermaidSirensHutMagiEyeMagiTravellerTent_syrensJailFireAltarAirAltarEarthAltarWaterAltarAlchemyLabChestFirePitFountainGraveyardslamLightHouseMinesObeliskRandResourceSawmillShipWreckWagonCampWindmillShipTownGateRandC1RandC2RandC3NatureRandDragonTradingPostStonehengeMercenaryCampGinHousePondWitchsHutWooddrawnManHoldingWoodWellMushroomGolemHouseAlchemyTowerStablesRandChestSyrens"
 
 var _Object_map = map[Object]string{
-	1:   _Object_name[0:10],
-	4:   _Object_name[10:18],
-	5:   _Object_name[18:28],
-	7:   _Object_name[28:38],
-	10:  _Object_name[38:44],
-	12:  _Object_name[44:53],
-	13:  _Object_name[53:65],
-	15:  _Object_name[65:77],
-	16:  _Object_name[77:87],
-	20:  _Object_name[87:97],
-	21:  _Object_name[97:107],
-	22:  _Object_name[107:117],
-	23:  _Object_name[117:122],
-	25:  _Object_name[122:129],
-	26:  _Object_name[129:134],
-	29:  _Object_name[134:141],
-	30:  _Object_name[141:147],
-	32:  _Object_name[147:156],
-	34:  _Object_name[156:166],
-	35:  _Object_name[166:172],
-	36:  _Object_name[172:183],
-	37:  _Object_name[183:192],
-	40:  _Object_name[192:200],
-	48:  _Object_name[200:210],
-	49:  _Object_name[210:222],
-	58:  _Object_name[222:232],
-	59:  _Object_name[232:241],
-	60:  _Object_name[241:249],
-	61:  _Object_name[249:254],
-	62:  _Object_name[254:258],
-	63:  _Object_name[258:269],
-	64:  _Object_name[269:282],
-	68:  _Object_name[282:297],
-	69:  _Object_name[297:306],
-	70:  _Object_name[306:312],
-	71:  _Object_name[312:320],
-	72:  _Object_name[320:332],
-	73:  _Object_name[332:345],
-	76:  _Object_name[345:352],
-	77:  _Object_name[352:365],
-	78:  _Object_name[365:375],
-	79:  _Object_name[375:381],
-	82:  _Object_name[381:395],
-	83:  _Object_name[395:406],
-	85:  _Object_name[406:415],
-	86:  _Object_name[415:421],
-	87:  _Object_name[421:425],
-	89:  _Object_name[425:438],
-	91:  _Object_name[438:450],
-	94:  _Object_name[450:459],
-	96:  _Object_name[459:475],
-	97:  _Object_name[475:490],
-	114: _Object_name[490:495],
-	115: _Object_name[495:507],
-	116: _Object_name[507:514],
-	117: _Object_name[514:520],
-	118: _Object_name[520:527],
-	119: _Object_name[527:534],
-	120: _Object_name[534:547],
-	123: _Object_name[547:551],
-	124: _Object_name[551:560],
-	125: _Object_name[560:568],
-	126: _Object_name[568:578],
-	127: _Object_name[578:588],
-	234: _Object_name[588:600],
-	235: _Object_name[600:607],
+	1:   _Object_name[0:11],
+	4:   _Object_name[11:19],
+	5:   _Object_name[19:29],
+	7:   _Object_name[29:39],
+	10:  _Object_name[39:45],
+	12:  _Object_name[45:55],
+	13:  _Object_name[55:67],
+	15:  _Object_name[67:79],
+	16:  _Object_name[79:89],
+	20:  _Object_name[89:99],
+	21:  _Object_name[99:110],
+	22:  _Object_name[110:120],
+	23:  _Object_name[120:126],
+	25:  _Object_name[126:134],
+	26:  _Object_name[134:139],
+	28:  _Object_name[139:142],
+	29:  _Object_name[142:150],
+	30:  _Object_name[150:156],
+	32:  _Object_name[156:166],
+	34:  _Object_name[166:176],
+	35:  _Object_name[176:189],
+	36:  _Object_name[189:200],
+	37:  _Object_name[200:210],
+	40:  _Object_name[210:219],
+	48:  _Object_name[219:227],
+	49:  _Object_name[227:237],
+	56:  _Object_name[237:242],
+	58:  _Object_name[242:252],
+	59:  _Object_name[252:261],
+	60:  _Object_name[261:269],
+	61:  _Object_name[269:274],
+	62:  _Object_name[274:278],
+	63:  _Object_name[278:290],
+	64:  _Object_name[290:303],
+	68:  _Object_name[303:318],
+	69:  _Object_name[318:327],
+	70:  _Object_name[327:333],
+	71:  _Object_name[333:341],
+	72:  _Object_name[341:353],
+	73:  _Object_name[353:367],
+	76:  _Object_name[367:374],
+	77:  _Object_name[374:387],
+	78:  _Object_name[387:397],
+	79:  _Object_name[397:403],
+	82:  _Object_name[403:417],
+	83:  _Object_name[417:428],
+	84:  _Object_name[428:438],
+	85:  _Object_name[438:454],
+	86:  _Object_name[454:460],
+	87:  _Object_name[460:464],
+	89:  _Object_name[464:477],
+	91:  _Object_name[477:489],
+	94:  _Object_name[489:498],
+	96:  _Object_name[498:514],
+	97:  _Object_name[514:535],
+	99:  _Object_name[535:541],
+	100: _Object_name[541:550],
+	102: _Object_name[550:556],
+	103: _Object_name[556:568],
+	106: _Object_name[568:576],
+	114: _Object_name[576:581],
+	115: _Object_name[581:593],
+	116: _Object_name[593:600],
+	117: _Object_name[600:606],
+	118: _Object_name[606:613],
+	119: _Object_name[613:620],
+	120: _Object_name[620:633],
+	122: _Object_name[633:640],
+	123: _Object_name[640:644],
+	124: _Object_name[644:653],
+	125: _Object_name[653:661],
+	126: _Object_name[661:671],
+	127: _Object_name[671:681],
+	129: _Object_name[681:691],
+	134: _Object_name[691:696],
+	136: _Object_name[696:703],
+	137: _Object_name[703:711],
+	140: _Object_name[711:720],
+	142: _Object_name[720:724],
+	149: _Object_name[724:734],
+	151: _Object_name[734:739],
+	153: _Object_name[739:746],
+	155: _Object_name[746:758],
+	157: _Object_name[758:765],
+	160: _Object_name[765:774],
+	165: _Object_name[774:783],
+	168: _Object_name[783:791],
+	171: _Object_name[791:795],
+	177: _Object_name[795:803],
+	179: _Object_name[803:809],
+	180: _Object_name[809:815],
+	181: _Object_name[815:827],
+	182: _Object_name[827:837],
+	191: _Object_name[837:848],
+	194: _Object_name[848:858],
+	201: _Object_name[858:871],
+	202: _Object_name[871:879],
+	212: _Object_name[879:883],
+	213: _Object_name[883:892],
+	218: _Object_name[892:896],
+	220: _Object_name[896:915],
+	222: _Object_name[915:919],
+	223: _Object_name[919:927],
+	225: _Object_name[927:937],
+	234: _Object_name[937:949],
+	235: _Object_name[949:956],
+	244: _Object_name[956:965],
+	250: _Object_name[965:971],
 }
 
 func (i Object) String() string {
 	if str, ok := _Object_map[i]; ok {
 		return str
 	}
-	return strconv.FormatInt(int64(i), 10)
+	return "Object(" + strconv.FormatInt(int64(i), 10) + ")"
 }

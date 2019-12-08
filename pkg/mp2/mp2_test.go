@@ -165,7 +165,7 @@ func TestRenderMap(t *testing.T) {
 				_ = tile
 				// switch obj {
 				// case Windmill:
-				addLabel(mapImg, x*tileWidth, y*tileHeight+tileHeight, fmt.Sprintf("%v", tile.UniqueNumber1))
+				addLabel(mapImg, x*tileWidth, y*tileHeight+tileHeight, fmt.Sprintf("%v", tile.GeneralObject))
 				//				}
 			}
 			// fmt.Fprintln(&b)
@@ -184,6 +184,14 @@ func TestRenderMap(t *testing.T) {
 }
 
 func addLabel(img *image.RGBA, x, y int, label string) {
+	label = strings.TrimPrefix(label, "Object(")
+	label = strings.TrimSuffix(label, ")")
+	if label == "0" || strings.HasPrefix(label, "_") {
+		return
+	}
+	if len(label) > 5 {
+		label = label[:5]
+	}
 	col := color.RGBA{255, 255, 255, 255}
 	point := fixed.Point26_6{fixed.Int26_6(x * 64), fixed.Int26_6(y * 64)}
 
