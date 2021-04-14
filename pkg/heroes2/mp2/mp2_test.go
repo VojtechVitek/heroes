@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/VojtechVitek/heroes/pkg/agg"
+	"github.com/VojtechVitek/heroes/pkg/heroes2/agg"
 	"github.com/disintegration/imaging"
 	"github.com/pkg/errors"
 	"golang.org/x/image/font"
