@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/VojtechVitek/heroes/pkg/h3m"
-	"github.com/davecgh/go-spew/spew"
 )
 
 func main() {
@@ -24,7 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	spew.Dump(m)
+	// spew.Dump(m)
 
 	fmt.Printf("Number of players: %v\n", m.NumberOfPlayers())
 }

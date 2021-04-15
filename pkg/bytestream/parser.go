@@ -79,7 +79,7 @@ func (p *Parser) Bool(numBytes int) bool {
 	}
 }
 
-func (p *Parser) ReadBytes(numBytes int) []byte {
+func (p *Parser) Bytes(numBytes int) []byte {
 	if p.err != nil || numBytes == 0 {
 		return nil
 	}
@@ -98,11 +98,11 @@ func (p *Parser) ReadBytes(numBytes int) []byte {
 	return buf
 }
 
-func (p *Parser) ReadString(numBytes int) string {
-	return string(p.ReadBytes(numBytes))
+func (p *Parser) String(numBytes int) string {
+	return string(p.Bytes(numBytes))
 }
 
-func (p *Parser) ReadCString() string {
+func (p *Parser) CString() string {
 	if p.err != nil {
 		return ""
 	}

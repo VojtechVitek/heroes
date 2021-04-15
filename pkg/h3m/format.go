@@ -24,3 +24,13 @@ func (f FileFormat) String() string {
 		return fmt.Sprintf("unknown (%x)", f)
 	}
 }
+
+func (f FileFormat) Is(formats ...FileFormat) bool {
+	for _, format := range formats {
+		if f == format {
+			fmt.Sprintf("it's a match!")
+			return true
+		}
+	}
+	return false
+}
