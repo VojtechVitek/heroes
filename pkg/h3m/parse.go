@@ -22,22 +22,30 @@ func Parse(r io.Reader) (*H3M, error) {
 		return nil, err
 	}
 
+	//spew.Dump(b.Bytes())
+
 	get := bytestream.New(b.Bytes(), binary.LittleEndian)
 
 	h3m := &H3M{}
 
 	// https://github.com/potmdehex/homm3tools/blob/5687f581a4eb5e7b0e8f48794d7be4e3b0a8cc8b/h3m/h3mlib/h3m_structures/h3m.h#L28
 	h3m.Format = FileFormat(get.Int(4))
+	fmt.Println("format:", h3m.Format)
 
 	// Basic map info, aka H3M_BI.
 	// https://github.com/potmdehex/homm3tools/blob/5687f581a4eb5e7b0e8f48794d7be4e3b0a8cc8b/h3m/h3mlib/h3m_structures/h3m.h#L29
 	h3m.MapInfo.HasHero = get.Bool(1)
 	h3m.MapInfo.MapSize = get.Int(4)
 	h3m.MapInfo.HasTwoLevels = get.Bool(1)
+
 	nameLen := get.Int(4)
 	h3m.MapInfo.Name = get.String(nameLen)
+	fmt.Println("name:", h3m.MapInfo.Name)
+
 	descLen := get.Int(4)
 	h3m.MapInfo.Desc = get.String(descLen)
+	fmt.Println("desc:", h3m.MapInfo.Desc)
+
 	h3m.MapInfo.Difficulty = get.Int(1)
 
 	if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
@@ -74,58 +82,41 @@ func Parse(r io.Reader) (*H3M, error) {
 			//   struct H3M_PLAYER_EXT_WITH_TOWN_AND_HERO_ABSOD e3;
 			// }
 
-			if false { // H3M_PLAYER_EXT_ABSOD_DEFAULT
-				player.StartingHeroIsRandom = get.Bool(1)
-				player.StartingHeroType = get.Int(1)
-				player.StartingHeroFace = get.Int(1)
-
-				heroNameLen := get.Int(4)
-				player.StartingHeroName = get.String(heroNameLen)
-				fmt.Printf("HERO NAME: %v", player.StartingHeroName)
-			}
-
-			if false { // H3M_PLAYER_EXT_WITH_TOWN_ABSOD
+			if player.HasMainTown {
 				player.StartingTownCreateHero = get.Bool(1)
 				player.StartingTownType = get.Int(1)
 				player.StartingTownPos.X = get.Int(1)
 				player.StartingTownPos.Y = get.Int(1)
 				player.StartingTownPos.Z = get.Int(1)
 
-				player.StartingHeroIsRandom = get.Bool(1)
-				player.StartingHeroType = get.Int(1)
-				player.StartingHeroFace = get.Int(1)
-
-				startingHeroNameLen := get.Int(4)
-				player.StartingHeroName = get.String(startingHeroNameLen)
-				fmt.Printf("HERO NAME: %v", player.StartingHeroName)
+				//  meta->player_ext_types[idx] = 1;
 			}
 
-			if false { // H3M_PLAYER_EXT_WITH_HERO_ABSOD
-				player.StartingHeroIsRandom = get.Bool(1)
-				player.StartingHeroType = get.Int(1)
-				player.StartingHeroFace = get.Int(1)
+			// When type != 0xFF
+			// player_has_ai[idx] = 1;
 
-				startingHeroNameLen := get.Int(4)
-				player.StartingHeroName = get.String(startingHeroNameLen)
-				fmt.Printf("HERO NAME: %v", player.StartingHeroName)
+			player.StartingHeroIsRandom = get.Bool(1)
+			player.StartingHeroType = get.Int(1)
+			player.StartingHeroFace = get.Int(1)
+
+			len := get.Int(4)
+			player.StartingHeroName = get.String(len)
+			fmt.Println("Player", i, "name (=", len, "):", player.StartingHeroName, ", StartingHeroType:", player.StartingHeroType)
+
+			if player.StartingHeroType != 0xFF {
+				_ = get.Bytes(1) // unknown byte
+				heroesCount := get.Int(4)
+				fmt.Println("heroesCount:", heroesCount)
+				if heroesCount > 10 {
+					heroesCount = 10
+				}
+				for i := 0; i < heroesCount; i++ {
+					heroesType := get.Int(1)
+					len := get.Int(4)
+					heroesName := get.String(len)
+					fmt.Println(i, ": ", heroesName, "(", len, ")", heroesType)
+				}
 			}
-
-			if true { // H3M_PLAYER_EXT_WITH_TOWN_AND_HERO_ABSOD
-				player.StartingTownCreateHero = get.Bool(1)
-				player.StartingTownType = get.Int(1)
-				player.StartingTownPos.X = get.Int(1)
-				player.StartingTownPos.Y = get.Int(1)
-				player.StartingTownPos.Z = get.Int(1)
-
-				player.StartingHeroIsRandom = get.Bool(1)
-				player.StartingHeroType = get.Int(1)
-				player.StartingHeroFace = get.Int(1)
-
-				startingHeroNameLen := get.Int(4)
-				player.StartingHeroName = get.String(startingHeroNameLen)
-				fmt.Printf("HERO NAME: %v", player.StartingHeroName)
-			}
-
 		} else {
 
 			panic("ROE not implemented")
@@ -158,24 +149,6 @@ func Parse(r io.Reader) (*H3M, error) {
 				startingHeroNameLen := get.Int(4)
 				player.StartingHeroName = get.String(startingHeroNameLen)
 			}
-		}
-	}
-
-	// Player AI heroes, aka H3M_PLAYER_AI_ABSOD.
-	if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
-
-		// TODO: 8x
-
-		_ = get.Bytes(1) // unknown byte
-		heroesCount := get.Int(4)
-		fmt.Printf("Heroes count: %v\n", heroesCount)
-		for i := 0; i < heroesCount; i++ {
-			playerType := get.Int(1)
-			nameLen := get.Int(4)
-			name := get.String(nameLen)
-			//fmt.Printf("AI player heroes: %v (type %v)\n", name, playerType)
-			_ = name
-			_ = playerType
 		}
 	}
 

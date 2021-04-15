@@ -19,6 +19,11 @@ type Player struct {
 	StartingHeroName     string
 }
 
+type Heroes struct {
+	Type int
+	Name string
+}
+
 func (h3m *H3M) NumberOfPlayers() int {
 	var num int
 	for _, player := range h3m.Players {

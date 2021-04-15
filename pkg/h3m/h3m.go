@@ -33,7 +33,7 @@ type MapInfo struct {
 	WinConditionUpgradeCastleLevel int
 	WinConditionPos                Position
 
-	LoseCondition Condition
+	//LoseCondition Condition
 }
 
 type Position struct {

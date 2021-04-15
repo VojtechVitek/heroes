@@ -16,6 +16,7 @@ const (
 	FLAG_DWELLINGS       Condition = 0x08
 	FLAG_MINES           Condition = 0x09
 	TRANSPORT_ARTIFACT   Condition = 0x0A
+	NONE                 Condition = 0xFF
 )
 
 func (c Condition) String() string {
@@ -42,8 +43,10 @@ func (c Condition) String() string {
 		return "FLAG_MINES"
 	case TRANSPORT_ARTIFACT:
 		return "TRANSPORT_ARTIFACT"
+	case NONE:
+		return "NONE"
 	default:
-		return fmt.Sprintf("unknown condition (%x)", c)
+		return fmt.Sprintf("unknown condition (%X)", int(c))
 	}
 }
 
