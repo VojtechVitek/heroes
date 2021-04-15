@@ -9,8 +9,8 @@ const (
 	ACCUMULATE_CREATURES Condition = 0x01
 	ACCUMULATE_RESOURCES Condition = 0x02
 	UPGRADE_TOWN         Condition = 0x03
-	BUILD_GRAIL          Condition = 0x04
-	DEFEAT_HERO          Condition = 0x05
+	BUILD_GRAIL          Condition = 0x04 // position
+	DEFEAT_HERO          Condition = 0x05 // position
 	CAPTURE_TOWN         Condition = 0x06
 	DEFEAT_MONSTER       Condition = 0x07
 	FLAG_DWELLINGS       Condition = 0x08
@@ -45,4 +45,13 @@ func (c Condition) String() string {
 	default:
 		return fmt.Sprintf("unknown condition (%x)", c)
 	}
+}
+
+func (c Condition) Is(conditions ...Condition) bool {
+	for _, condition := range conditions {
+		if c == condition {
+			return true
+		}
+	}
+	return false
 }

@@ -68,6 +68,7 @@ func Parse(r io.Reader) (*H3M, error) {
 
 		_ = get.Bytes(1) // unknown byte
 		heroesCount := get.Int(4)
+		fmt.Printf("Heroes count: %v\n", heroesCount)
 		for i := 0; i < heroesCount; i++ {
 			playerType := get.Int(1)
 			nameSize := get.Int(4)
@@ -78,8 +79,33 @@ func Parse(r io.Reader) (*H3M, error) {
 
 	// Parse additional map information.
 	h3m.MapInfo.WinCondition = Condition(get.Int(1))
+	h3m.MapInfo.WinConditionAllowNormalWin = get.Bool(1) // Allow normal win. Supposedly doesn't work.
+	h3m.MapInfo.WinConditionAppliesToComputer = get.Bool(1)
 
-	h3m.MapInfo.LoseCondition = Condition(get.Int(1))
+	if h3m.MapInfo.WinCondition.Is(ACQUIRE_ARTIFACT, ACCUMULATE_CREATURES, BUILD_GRAIL, DEFEAT_HERO) {
+		if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
+			h3m.MapInfo.WinConditionType = get.Int(2)
+		} else {
+			h3m.MapInfo.WinConditionType = get.Int(1)
+		}
+	}
+
+	if h3m.MapInfo.WinCondition.Is(ACCUMULATE_CREATURES, ACCUMULATE_RESOURCES) {
+		h3m.MapInfo.WinConditionAmount = get.Int(4)
+	}
+
+	if h3m.MapInfo.WinCondition.Is(TRANSPORT_ARTIFACT, UPGRADE_TOWN) {
+		h3m.MapInfo.WinConditionPos.X = get.Int(1)
+		h3m.MapInfo.WinConditionPos.Y = get.Int(1)
+		h3m.MapInfo.WinConditionPos.Z = get.Int(1)
+	}
+
+	if h3m.MapInfo.WinCondition.Is(UPGRADE_TOWN) {
+		h3m.MapInfo.WinConditionUpgradeHallLevel = get.Int(1)
+		h3m.MapInfo.WinConditionUpgradeCastleLevel = get.Int(1)
+	}
+
+	//h3m.MapInfo.LoseCondition = Condition(get.Int(1))
 
 	return h3m, get.Error()
 }

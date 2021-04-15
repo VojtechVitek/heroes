@@ -8,7 +8,36 @@ package h3m
 // Maps commonly end with 124 bytes of null padding. Extra content at end
 // is ok.
 type H3M struct {
-	Format  FileFormat
-	MapInfo MapInfo
+	Format FileFormat
+	MapInfo
 	Players [8]Player
+}
+
+type MapInfo struct {
+	// Basic info.
+	HasHero      bool
+	MapSize      int
+	HasTwoLevels bool
+	Name         string
+	Desc         string
+	Difficulty   int
+	MasteryCap   int // Only set on ArmageddonsBlade and ShadowOfDeath maps.
+
+	// Additional info.
+	WinCondition                   Condition
+	WinConditionAllowNormalWin     bool
+	WinConditionAppliesToComputer  bool
+	WinConditionType               int // Might be type of Resource, ie. "Gems".
+	WinConditionAmount             int
+	WinConditionUpgradeHallLevel   int
+	WinConditionUpgradeCastleLevel int
+	WinConditionPos                Position
+
+	LoseCondition Condition
+}
+
+type Position struct {
+	X int
+	Y int
+	Z int
 }
