@@ -13,11 +13,12 @@ import (
 
 // Header
 //
-// We have to unpack these bytes manually. We can't
-// use binary.Read() and unmarshal the data
-// automatically into struct fields, since Go adds
-// struct padding whenever it feels like when you
-// combine uint16 and uint8. ¯\_(ツ)_/¯
+// We have to unpack these bytes manually. We can't use
+// binary.Read(r, binary.BigEndian, &header) and unmarshal
+// the data automatically into a struct fields, since Go adds
+// struct padding whenever it feels like in between the fields,
+// ie. when you combine uint16 and uint8. More info at
+// https://dave.cheney.net/2015/10/09/padding-is-hard
 //
 // 0x0       0     MagicByte           4 bytes
 // 0x4       4     Difficulty          2 bytes
