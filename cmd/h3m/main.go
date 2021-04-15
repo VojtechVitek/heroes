@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -24,6 +25,8 @@ func main() {
 	}
 
 	spew.Dump(m)
+
+	fmt.Printf("Number of players: %v\n", m.NumberOfPlayers())
 }
 
 const usage = `h3m map.h3m

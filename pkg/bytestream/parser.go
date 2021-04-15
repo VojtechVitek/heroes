@@ -8,28 +8,24 @@ import (
 	"github.com/pkg/errors"
 )
 
-type parser struct {
+type Parser struct {
 	b     *bytes.Buffer
 	order binary.ByteOrder
 	err   error
 }
 
-// if err := binary.Read(bytes.NewReader(data[0:2]), p.order, &u16); err != nil {
-//		return nil, errors.Wrap(err, "failed to read number of sprites")
-// }
-
-func New(b []byte, order binary.ByteOrder) *parser {
-	return &parser{
+func New(b []byte, order binary.ByteOrder) *Parser {
+	return &Parser{
 		b:     bytes.NewBuffer(b),
 		order: order,
 	}
 }
 
-func (p *parser) Error() error {
+func (p *Parser) Error() error {
 	return p.err
 }
 
-func (p *parser) Int(numBytes int) int {
+func (p *Parser) Int(numBytes int) int {
 	if p.err != nil {
 		return 0
 	}
@@ -56,7 +52,7 @@ func (p *parser) Int(numBytes int) int {
 	}
 }
 
-func (p *parser) Bool(numBytes int) bool {
+func (p *Parser) Bool(numBytes int) bool {
 	if p.err != nil {
 		return false
 	}
@@ -83,7 +79,7 @@ func (p *parser) Bool(numBytes int) bool {
 	}
 }
 
-func (p *parser) ReadBytes(numBytes int) []byte {
+func (p *Parser) ReadBytes(numBytes int) []byte {
 	if p.err != nil || numBytes == 0 {
 		return nil
 	}
@@ -102,11 +98,11 @@ func (p *parser) ReadBytes(numBytes int) []byte {
 	return buf
 }
 
-func (p *parser) ReadString(numBytes int) string {
+func (p *Parser) ReadString(numBytes int) string {
 	return string(p.ReadBytes(numBytes))
 }
 
-func (p *parser) ReadCString() string {
+func (p *Parser) ReadCString() string {
 	if p.err != nil {
 		return ""
 	}
