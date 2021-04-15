@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/VojtechVitek/heroes/pkg/h3m"
+	"github.com/davecgh/go-spew/spew"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%+v\n", m)
+	spew.Dump(m)
 }
 
 const usage = `h3m map.h3m

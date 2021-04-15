@@ -17,16 +17,28 @@ import (
 // Maps commonly end with 124 bytes of null padding. Extra content at end
 // is ok.
 type H3M struct {
-	Format int
-	Roe1   Roe
+	Format  FileFormat
+	MapInfo MapInfo
 }
 
-type Roe struct {
+type FileFormat int
+
+const (
+	Orig             FileFormat = 0x0000000E // The Restoration of Erathia (the original HOMM III game)
+	ArmageddonsBlade FileFormat = 0x00000015 // Armageddon's Blade (HOMM III expansion pack)
+	ShadowOfDeath    FileFormat = 0x0000001C // The Shadow of Death (HOMM III expansion pack)
+	_CHR             FileFormat = 0x0000001D // Chronicles?
+	_WOG             FileFormat = 0x00000033 // In the Wake of Gods (free fan-made expansion pack)
+)
+
+type MapInfo struct {
 	HasHero      bool
 	MapSize      int
 	HasTwoLevels bool
 	Name         string
 	Desc         string
+	Difficulty   int
+	MasteryCap   int // Only set when format is ArmageddonsBlade or ShadowOfDeath.
 }
 
 func Parse(r io.Reader) (*H3M, error) {
@@ -44,15 +56,20 @@ func Parse(r io.Reader) (*H3M, error) {
 	get := bytestream.New(b.Bytes(), binary.LittleEndian)
 
 	h3m := &H3M{}
-	h3m.Format = get.Int(4)
-
-	h3m.Roe1.HasHero = get.Bool(1)
-	h3m.Roe1.MapSize = get.Int(4)
-	h3m.Roe1.HasTwoLevels = get.Bool(1)
+	h3m.Format = FileFormat(get.Int(4))
+	h3m.MapInfo.HasHero = get.Bool(1)
+	h3m.MapInfo.MapSize = get.Int(4)
+	h3m.MapInfo.HasTwoLevels = get.Bool(1)
 	nameSize := get.Int(4)
-	h3m.Roe1.Name = get.ReadString(nameSize)
+	h3m.MapInfo.Name = get.ReadString(nameSize)
 	descSize := get.Int(4)
-	h3m.Roe1.Desc = get.ReadString(descSize)
+	h3m.MapInfo.Desc = get.ReadString(descSize)
+	h3m.MapInfo.Difficulty = get.Int(1)
+
+	switch h3m.Format {
+	case ArmageddonsBlade, ShadowOfDeath:
+		h3m.MapInfo.MasteryCap = get.Int(1)
+	}
 
 	return h3m, get.Error()
 }

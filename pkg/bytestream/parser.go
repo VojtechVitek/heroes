@@ -84,7 +84,7 @@ func (p *parser) Bool(numBytes int) bool {
 }
 
 func (p *parser) ReadBytes(numBytes int) []byte {
-	if p.err != nil {
+	if p.err != nil || numBytes == 0 {
 		return nil
 	}
 
