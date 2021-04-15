@@ -79,11 +79,20 @@ func (p *parser) Bool(numBytes int) bool {
 	}
 }
 
-func (p *parser) ReadCString() (str string) {
+func (p *parser) ReadCString() string {
 	if p.err != nil {
 		return ""
 	}
 
-	str, p.err = p.b.ReadString(byte(0))
-	return str
+	str, err := p.b.ReadString(byte(0))
+	if err != nil {
+		p.err = err
+		return ""
+	}
+
+	if len(str) <= 1 {
+		return ""
+	}
+
+	return str[:len(str)-2]
 }

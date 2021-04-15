@@ -8,8 +8,8 @@ import (
 	"github.com/VojtechVitek/heroes/pkg/bytestream"
 )
 
-// Ported from C/C++ https://github.com/potmdehex/homm3toolsby.
-// Original file: https://github.com/potmdehex/homm3tools/blob/master/h3m/h3mlib/h3m_structures/h3m.h
+// The binary format sourced from
+// https://github.com/potmdehex/homm3tools/blob/master/h3m/h3mlib/h3m_structures/h3m.h
 // The MIT License (MIT)
 // Copyright (c) 2016 John Åkerblom
 
