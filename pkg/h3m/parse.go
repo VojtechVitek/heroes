@@ -76,5 +76,10 @@ func Parse(r io.Reader) (*H3M, error) {
 		}
 	}
 
+	// Parse additional map information.
+	h3m.MapInfo.WinCondition = Condition(get.Int(1))
+
+	h3m.MapInfo.LoseCondition = Condition(get.Int(1))
+
 	return h3m, get.Error()
 }
