@@ -23,7 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(m)
+	fmt.Printf("%+v\n", m)
 }
 
 const usage = `h3m map.h3m

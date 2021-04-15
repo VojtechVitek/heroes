@@ -3,6 +3,7 @@ package h3m
 import (
 	"bytes"
 	"compress/gzip"
+	"encoding/binary"
 	"io"
 
 	"github.com/VojtechVitek/heroes/pkg/bytestream"
@@ -24,9 +25,7 @@ type Roe struct {
 	HasHero      bool
 	MapSize      int
 	HasTwoLevels bool
-	NameSize     int
 	Name         string
-	DescSize     int
 	Desc         string
 }
 
@@ -42,7 +41,7 @@ func Parse(r io.Reader) (*H3M, error) {
 		return nil, err
 	}
 
-	get := bytestream.New(b.Bytes())
+	get := bytestream.New(b.Bytes(), binary.LittleEndian)
 
 	h3m := &H3M{}
 	h3m.Format = get.Int(4)
@@ -50,10 +49,10 @@ func Parse(r io.Reader) (*H3M, error) {
 	h3m.Roe1.HasHero = get.Bool(1)
 	h3m.Roe1.MapSize = get.Int(4)
 	h3m.Roe1.HasTwoLevels = get.Bool(1)
-	h3m.Roe1.NameSize = get.Int(4)
-	h3m.Roe1.Name = get.ReadCString()
-	h3m.Roe1.DescSize = get.Int(4)
-	h3m.Roe1.Desc = get.ReadCString()
+	nameSize := get.Int(4)
+	h3m.Roe1.Name = get.ReadString(nameSize)
+	descSize := get.Int(4)
+	h3m.Roe1.Desc = get.ReadString(descSize)
 
 	return h3m, get.Error()
 }
