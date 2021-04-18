@@ -50,3 +50,8 @@ type Position struct {
 	Y int
 	Z int
 }
+
+type Rumor struct {
+	Name string
+	Desc string
+}

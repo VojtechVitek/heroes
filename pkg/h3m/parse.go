@@ -200,17 +200,52 @@ func Parse(r io.Reader) (*H3M, error) {
 	h3m.Teams[6] = get.Int(1)
 	h3m.Teams[7] = get.Int(1)
 
-	h3m.AvailableHeroes = get.Bytes(20) // AB/SOD
-	_ = get.Bytes(4)                    // empty; AB/SOD
-	h3m.CustomHeroesCount = get.Int(1)  // SOD
+	if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
+		h3m.AvailableHeroes = get.Bytes(20) // AB/SOD
+		_ = get.Bytes(4)                    // empty; AB/SOD
+	}
 
-	for i := 0; i < h3m.CustomHeroesCount; i++ {
-		h3m.CustomHeroes[i] = CustomHeroes{
-			Type:           get.Int(1),
-			Face:           get.Int(1),
-			Name:           get.String(get.Int(4)),
-			AllowedPlayers: get.Int(1),
+	if h3m.Format.Is(ShadowOfDeath) {
+		h3m.CustomHeroesCount = get.Int(1) // SOD
+
+		for i := 0; i < h3m.CustomHeroesCount; i++ {
+			h3m.CustomHeroes[i] = CustomHeroes{
+				Type:           get.Int(1),
+				Face:           get.Int(1),
+				Name:           get.String(get.Int(4)),
+				AllowedPlayers: get.Int(1),
+			}
 		}
+	}
+
+	_ = get.Bytes(31) // reserved
+
+	if h3m.Format.Is(ShadowOfDeath) {
+		availableArtifacts := get.Bytes(18)
+		_ = availableArtifacts // TODO
+
+		availableSpells := get.Bytes(9)
+		_ = availableSpells // TODO
+
+		availableSkills := get.Bytes(4)
+		_ = availableSkills // TODO
+	}
+
+	rumorsCount := get.Int(4)
+	for i := 0; i < rumorsCount; i++ {
+		if i > 10 {
+			break
+		}
+		nameLen := get.Int(4)
+		name := get.String(nameLen)
+		descLen := get.Int(4)
+		desc := get.String(descLen)
+		fmt.Println("rumor:", name, ":", desc)
+	}
+
+	if h3m.Format.Is(ShadowOfDeath) {
+		heroSettings := get.Bytes(156) // SOD
+		_ = heroSettings
 	}
 
 	return h3m, get.Error()
