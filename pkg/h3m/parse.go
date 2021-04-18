@@ -153,11 +153,11 @@ func Parse(r io.Reader) (*H3M, error) {
 	}
 
 	// Parse additional map information, aka H3M_AI.
-	h3m.MapInfo.WinCondition = Condition(get.Int(1))
+	h3m.MapInfo.WinCondition = WinCondition(get.Int(1))
 	h3m.MapInfo.WinConditionAllowNormalWin = get.Bool(1) // Allow normal win. Supposedly doesn't work.
 	h3m.MapInfo.WinConditionAppliesToComputer = get.Bool(1)
 
-	if h3m.MapInfo.WinCondition.Is(ACQUIRE_ARTIFACT, ACCUMULATE_CREATURES, BUILD_GRAIL, DEFEAT_HERO) {
+	if h3m.MapInfo.WinCondition.Is(WIN_ACQUIRE_ARTIFACT, WIN_ACCUMULATE_CREATURES, WIN_BUILD_GRAIL, WIN_DEFEAT_HERO) {
 		if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
 			h3m.MapInfo.WinConditionType = get.Int(2)
 		} else {
@@ -165,22 +165,53 @@ func Parse(r io.Reader) (*H3M, error) {
 		}
 	}
 
-	if h3m.MapInfo.WinCondition.Is(ACCUMULATE_CREATURES, ACCUMULATE_RESOURCES) {
+	if h3m.MapInfo.WinCondition.Is(WIN_ACCUMULATE_CREATURES, WIN_ACCUMULATE_RESOURCES) {
 		h3m.MapInfo.WinConditionAmount = get.Int(4)
 	}
 
-	if h3m.MapInfo.WinCondition.Is(TRANSPORT_ARTIFACT, UPGRADE_TOWN) {
+	if h3m.MapInfo.WinCondition.Is(WIN_TRANSPORT_ARTIFACT, WIN_UPGRADE_TOWN) {
 		h3m.MapInfo.WinConditionPos.X = get.Int(1)
 		h3m.MapInfo.WinConditionPos.Y = get.Int(1)
 		h3m.MapInfo.WinConditionPos.Z = get.Int(1)
 	}
 
-	if h3m.MapInfo.WinCondition.Is(UPGRADE_TOWN) {
+	if h3m.MapInfo.WinCondition.Is(WIN_UPGRADE_TOWN) {
 		h3m.MapInfo.WinConditionUpgradeHallLevel = get.Int(1)
 		h3m.MapInfo.WinConditionUpgradeCastleLevel = get.Int(1)
 	}
 
-	//h3m.MapInfo.LoseCondition = Condition(get.Int(1))
+	h3m.MapInfo.LoseCondition = LoseCondition(get.Int(1))
+	switch h3m.MapInfo.LoseCondition {
+	case LOSE_TOWN, LOSE_HERO:
+		h3m.MapInfo.LoseConditionPos.X = get.Int(1)
+		h3m.MapInfo.LoseConditionPos.Y = get.Int(1)
+		h3m.MapInfo.LoseConditionPos.Z = get.Int(1)
+	case LOSE_TIME:
+		h3m.MapInfo.LoseConditionDays = get.Int(2)
+	}
+
+	h3m.TeamsCount = get.Int(1)
+	h3m.Teams[0] = get.Int(1)
+	h3m.Teams[1] = get.Int(1)
+	h3m.Teams[2] = get.Int(1)
+	h3m.Teams[3] = get.Int(1)
+	h3m.Teams[4] = get.Int(1)
+	h3m.Teams[5] = get.Int(1)
+	h3m.Teams[6] = get.Int(1)
+	h3m.Teams[7] = get.Int(1)
+
+	h3m.AvailableHeroes = get.Bytes(20) // AB/SOD
+	_ = get.Bytes(4)                    // empty; AB/SOD
+	h3m.CustomHeroesCount = get.Int(1)  // SOD
+
+	for i := 0; i < h3m.CustomHeroesCount; i++ {
+		h3m.CustomHeroes[i] = CustomHeroes{
+			Type:           get.Int(1),
+			Face:           get.Int(1),
+			Name:           get.String(get.Int(4)),
+			AllowedPlayers: get.Int(1),
+		}
+	}
 
 	return h3m, get.Error()
 }

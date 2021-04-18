@@ -24,6 +24,13 @@ type Heroes struct {
 	Name string
 }
 
+type CustomHeroes struct {
+	Type           int
+	Face           int
+	Name           string
+	AllowedPlayers int
+}
+
 func (h3m *H3M) NumberOfPlayers() int {
 	var num int
 	for _, player := range h3m.Players {

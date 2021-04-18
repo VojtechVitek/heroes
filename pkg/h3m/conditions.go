@@ -2,59 +2,77 @@ package h3m
 
 import "fmt"
 
-type Condition int
+type WinCondition int
 
 const (
-	ACQUIRE_ARTIFACT     Condition = 0x00
-	ACCUMULATE_CREATURES Condition = 0x01
-	ACCUMULATE_RESOURCES Condition = 0x02
-	UPGRADE_TOWN         Condition = 0x03
-	BUILD_GRAIL          Condition = 0x04 // position
-	DEFEAT_HERO          Condition = 0x05 // position
-	CAPTURE_TOWN         Condition = 0x06
-	DEFEAT_MONSTER       Condition = 0x07
-	FLAG_DWELLINGS       Condition = 0x08
-	FLAG_MINES           Condition = 0x09
-	TRANSPORT_ARTIFACT   Condition = 0x0A
-	NONE                 Condition = 0xFF
+	WIN_ACQUIRE_ARTIFACT     WinCondition = 0x00
+	WIN_ACCUMULATE_CREATURES WinCondition = 0x01
+	WIN_ACCUMULATE_RESOURCES WinCondition = 0x02
+	WIN_UPGRADE_TOWN         WinCondition = 0x03
+	WIN_BUILD_GRAIL          WinCondition = 0x04 // position
+	WIN_DEFEAT_HERO          WinCondition = 0x05 // position
+	WIN_CAPTURE_TOWN         WinCondition = 0x06
+	WIN_DEFEAT_MONSTER       WinCondition = 0x07
+	WIN_FLAG_DWELLINGS       WinCondition = 0x08
+	WIN_FLAG_MINES           WinCondition = 0x09
+	WIN_TRANSPORT_ARTIFACT   WinCondition = 0x0A
 )
 
-func (c Condition) String() string {
+func (c WinCondition) String() string {
 	switch c {
-	case ACQUIRE_ARTIFACT:
+	case WIN_ACQUIRE_ARTIFACT:
 		return "ACQUIRE_ARTIFACT"
-	case ACCUMULATE_CREATURES:
+	case WIN_ACCUMULATE_CREATURES:
 		return "ACCUMULATE_CREATURES"
-	case ACCUMULATE_RESOURCES:
+	case WIN_ACCUMULATE_RESOURCES:
 		return "ACCUMULATE_RESOURCES"
-	case UPGRADE_TOWN:
+	case WIN_UPGRADE_TOWN:
 		return "UPGRADE_TOWN"
-	case BUILD_GRAIL:
+	case WIN_BUILD_GRAIL:
 		return "BUILD_GRAIL"
-	case DEFEAT_HERO:
+	case WIN_DEFEAT_HERO:
 		return "DEFEAT_HERO"
-	case CAPTURE_TOWN:
+	case WIN_CAPTURE_TOWN:
 		return "CAPTURE_TOWN"
-	case DEFEAT_MONSTER:
+	case WIN_DEFEAT_MONSTER:
 		return "DEFEAT_MONSTER"
-	case FLAG_DWELLINGS:
+	case WIN_FLAG_DWELLINGS:
 		return "FLAG_DWELLINGS"
-	case FLAG_MINES:
+	case WIN_FLAG_MINES:
 		return "FLAG_MINES"
-	case TRANSPORT_ARTIFACT:
+	case WIN_TRANSPORT_ARTIFACT:
 		return "TRANSPORT_ARTIFACT"
-	case NONE:
-		return "NONE"
 	default:
 		return fmt.Sprintf("unknown condition (%X)", int(c))
 	}
 }
 
-func (c Condition) Is(conditions ...Condition) bool {
+func (c WinCondition) Is(conditions ...WinCondition) bool {
 	for _, condition := range conditions {
 		if c == condition {
 			return true
 		}
 	}
 	return false
+}
+
+type LoseCondition int
+
+const (
+	LOSE_TOWN LoseCondition = 0x00
+	LOSE_HERO LoseCondition = 0x01
+	LOSE_TIME LoseCondition = 0x02
+)
+
+func (c LoseCondition) String() string {
+	switch c {
+	case LOSE_TOWN:
+		return "LOSE_TOWN"
+	case LOSE_HERO:
+		return "LOSE_HERO"
+	case LOSE_TIME:
+		return "TIME"
+	default:
+		return fmt.Sprintf("unknown condition (%X)", int(c))
+	}
 }

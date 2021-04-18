@@ -24,7 +24,7 @@ type MapInfo struct {
 	MasteryCap   int // Only set on ArmageddonsBlade and ShadowOfDeath maps.
 
 	// Additional info.
-	WinCondition                   Condition
+	WinCondition                   WinCondition
 	WinConditionAllowNormalWin     bool
 	WinConditionAppliesToComputer  bool
 	WinConditionType               int // Might be type of Resource, ie. "Gems".
@@ -33,7 +33,16 @@ type MapInfo struct {
 	WinConditionUpgradeCastleLevel int
 	WinConditionPos                Position
 
-	//LoseCondition Condition
+	LoseCondition     LoseCondition
+	LoseConditionPos  Position
+	LoseConditionDays int
+
+	TeamsCount int
+	Teams      [8]int // RED, BLUE, TAN, GREEN, ORANGE, PURPLE, TEAL, PINK
+
+	AvailableHeroes   []byte // 20
+	CustomHeroesCount int
+	CustomHeroes      []CustomHeroes
 }
 
 type Position struct {
