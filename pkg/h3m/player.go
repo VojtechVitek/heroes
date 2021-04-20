@@ -10,7 +10,7 @@ type Player struct {
 	HasMainTown            bool
 
 	StartingTownCreateHero bool
-	StartingTownType       int
+	StartingTown           Town
 	StartingTownPos        Position
 
 	StartingHeroIsRandom bool

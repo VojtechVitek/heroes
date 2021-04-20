@@ -84,7 +84,7 @@ func Parse(r io.Reader) (*H3M, error) {
 
 			if player.HasMainTown {
 				player.StartingTownCreateHero = get.Bool(1)
-				player.StartingTownType = get.Int(1)
+				player.StartingTown = Town(get.Int(1))
 				player.StartingTownPos.X = get.Int(1)
 				player.StartingTownPos.Y = get.Int(1)
 				player.StartingTownPos.Z = get.Int(1)

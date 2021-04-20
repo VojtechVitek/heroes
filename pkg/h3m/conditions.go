@@ -16,6 +16,7 @@ const (
 	WIN_FLAG_DWELLINGS       WinCondition = 0x08
 	WIN_FLAG_MINES           WinCondition = 0x09
 	WIN_TRANSPORT_ARTIFACT   WinCondition = 0x0A
+	WIN_DEFEAT_ALL_ENEMIES   WinCondition = 0xFF
 )
 
 func (c WinCondition) String() string {
@@ -42,6 +43,8 @@ func (c WinCondition) String() string {
 		return "FLAG_MINES"
 	case WIN_TRANSPORT_ARTIFACT:
 		return "TRANSPORT_ARTIFACT"
+	case WIN_DEFEAT_ALL_ENEMIES:
+		return "WIN_DEFEAT_ALL_ENEMIES"
 	default:
 		return fmt.Sprintf("unknown condition (%X)", int(c))
 	}
@@ -59,9 +62,10 @@ func (c WinCondition) Is(conditions ...WinCondition) bool {
 type LoseCondition int
 
 const (
-	LOSE_TOWN LoseCondition = 0x00
-	LOSE_HERO LoseCondition = 0x01
-	LOSE_TIME LoseCondition = 0x02
+	LOSE_TOWN                LoseCondition = 0x00
+	LOSE_HERO                LoseCondition = 0x01
+	LOSE_TIME                LoseCondition = 0x02
+	LOSE_ALL_TOWNS_OR_HEROES               = 0xEF
 )
 
 func (c LoseCondition) String() string {
@@ -72,6 +76,8 @@ func (c LoseCondition) String() string {
 		return "LOSE_HERO"
 	case LOSE_TIME:
 		return "TIME"
+	case LOSE_ALL_TOWNS_OR_HEROES:
+		return "LOSE_ALL_TOWNS_OR_HEROES"
 	default:
 		return fmt.Sprintf("unknown condition (%X)", int(c))
 	}
