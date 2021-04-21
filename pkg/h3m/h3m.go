@@ -10,7 +10,7 @@ package h3m
 type H3M struct {
 	Format FileFormat
 	MapInfo
-	Players [8]Player
+	Players []Player
 }
 
 type MapInfo struct {

@@ -52,10 +52,10 @@ func Parse(r io.Reader) (*H3M, error) {
 		h3m.MapInfo.MasteryCap = get.Int(1)
 	}
 
-	// Players, aka [8]H3M_PLAYER.
+	// Players, aka 8x H3M_PLAYER.
 	// https://github.com/potmdehex/homm3tools/blob/5687f581a4eb5e7b0e8f48794d7be4e3b0a8cc8b/h3m/h3mlib/h3m_structures/h3m.h#L30
-	for i := 0; i < len(h3m.Players); i++ {
-		player := &h3m.Players[i]
+	for i := 0; i < 8; i++ {
+		player := Player{}
 		player.CanBeHuman = get.Bool(1)
 		player.CanBeComputer = get.Bool(1)
 		player.Behavior = get.Int(1)
@@ -149,6 +149,9 @@ func Parse(r io.Reader) (*H3M, error) {
 				startingHeroNameLen := get.Int(4)
 				player.StartingHeroName = get.String(startingHeroNameLen)
 			}
+		}
+		if player.CanBeHuman || player.CanBeComputer {
+			h3m.Players = append(h3m.Players, player)
 		}
 	}
 
