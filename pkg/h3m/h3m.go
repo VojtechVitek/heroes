@@ -16,7 +16,7 @@ type H3M struct {
 type MapInfo struct {
 	// Basic info.
 	HasHero      bool
-	MapSize      int
+	MapSize      MapSize
 	HasTwoLevels bool
 	Name         string
 	Desc         string

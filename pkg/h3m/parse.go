@@ -35,7 +35,7 @@ func Parse(r io.Reader) (*H3M, error) {
 	// Basic map info, aka H3M_BI.
 	// https://github.com/potmdehex/homm3tools/blob/5687f581a4eb5e7b0e8f48794d7be4e3b0a8cc8b/h3m/h3mlib/h3m_structures/h3m.h#L29
 	h3m.MapInfo.HasHero = get.Bool(1)
-	h3m.MapInfo.MapSize = get.Int(4)
+	h3m.MapInfo.MapSize = MapSize(get.Int(4))
 	h3m.MapInfo.HasTwoLevels = get.Bool(1)
 
 	nameLen := get.Int(4)
