@@ -6,7 +6,7 @@ type MapSize int
 
 const (
 	S  MapSize = 70
-	M  MapSize = 2
+	M  MapSize = 0x48
 	L  MapSize = 0x6c
 	XL MapSize = 4
 )

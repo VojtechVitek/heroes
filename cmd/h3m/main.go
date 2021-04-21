@@ -23,6 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	spew.Dump(m.NumberOfPlayers())
 	spew.Dump(m)
 }
 

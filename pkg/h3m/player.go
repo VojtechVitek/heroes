@@ -5,7 +5,7 @@ type Player struct {
 	CanBeComputer          bool
 	Behavior               int
 	AllowedAlignments      int // ShadowOfDeath only.
-	TownTypes              int
+	TownTypes              Town
 	Unknown1_HasRandomTown bool
 	HasMainTown            bool
 
@@ -30,6 +30,13 @@ type CustomHeroes struct {
 	Name           string
 	AllowedPlayers int
 }
+
+// type (p Player) String() string {
+// 	if !p.CanBeHuman && !p.CanBeComputer {
+// 		return ""
+// 	}
+// 	return ""
+// }
 
 func (h3m *H3M) NumberOfPlayers() int {
 	var num int

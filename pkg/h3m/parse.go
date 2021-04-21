@@ -64,7 +64,7 @@ func Parse(r io.Reader) (*H3M, error) {
 			player.AllowedAlignments = get.Int(1)
 		}
 
-		player.TownTypes = get.Int(1)
+		player.TownTypes = Town(get.Int(1))
 
 		if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
 			townConflux := get.Int(1)
