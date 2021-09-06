@@ -1,0 +1,41 @@
+{
+	"name": "Heroes prototype",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "svelte-kit dev -p 4000",
+		"build": "svelte-kit build",
+		"preview": "svelte-kit preview",
+		"start": "svelte-kit start",
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
+		"format": "prettier --write --plugin-search-dir=. ."
+	},
+	"devDependencies": {
+		"@rollup/plugin-dynamic-import-vars": "^1.4.0",
+		"@sveltejs/adapter-node": "^1.0.0-next.45",
+		"@sveltejs/kit": "next",
+		"@tsconfig/svelte": "^2.0.1",
+		"@types/cookie": "^0.4.1",
+		"@typescript-eslint/eslint-plugin": "^4.30.0",
+		"@typescript-eslint/parser": "^4.30.0",
+		"eslint": "^7.32.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-svelte3": "^3.2.0",
+		"prettier": "~2.3.2",
+		"prettier-plugin-svelte": "^2.4.0",
+		"svelte": "^3.42.4",
+		"svelte-check": "^2.2.5",
+		"svelte-preprocess": "^4.8.0",
+		"tslib": "^2.3.1",
+		"typescript": "^4.4.2",
+		"vite": "^2.5.3"
+	},
+	"type": "module",
+	"dependencies": {
+		"@fontsource/fira-mono": "^4.5.0",
+		"@lukeed/uuid": "^2.0.0",
+		"cookie": "^0.4.1",
+		"whatwg-fetch": "^3.6.2"
+	}
+}
