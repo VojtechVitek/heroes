@@ -11,6 +11,7 @@ type H3M struct {
 	Format FileFormat
 	MapInfo
 	Players []Player
+	Tiles   []*Tile
 }
 
 type MapInfo struct {
@@ -54,4 +55,14 @@ type Position struct {
 type Rumor struct {
 	Name string
 	Desc string
+}
+
+type Tile struct {
+	TerrainType   int
+	TerrainSprite int
+	RiverType     int
+	RiverSprite   int
+	RoadType      int
+	RoadSprite    int
+	Mirroring     int
 }

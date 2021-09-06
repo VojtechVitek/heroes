@@ -62,10 +62,15 @@ func (c WinCondition) Is(conditions ...WinCondition) bool {
 type LoseCondition int
 
 const (
-	LOSE_TOWN                LoseCondition = 0x00
-	LOSE_HERO                LoseCondition = 0x01
-	LOSE_TIME                LoseCondition = 0x02
-	LOSE_ALL_TOWNS_OR_HEROES               = 0xEF
+	LOSE_TOWN LoseCondition = 0x00
+	LOSE_HERO LoseCondition = 0x01
+	LOSE_TIME LoseCondition = 0x02
+
+	LOSE_TIME_EXPIRES LoseCondition = 0x0C
+
+	LOSE_TOWN2                LoseCondition = 0x12
+	LOSE_ALL_TOWNS_AND_HEROES LoseCondition = 0xEC
+	LOSE_ALL_TOWNS_OR_HEROES  LoseCondition = 0xEF
 )
 
 func (c LoseCondition) String() string {
@@ -76,8 +81,14 @@ func (c LoseCondition) String() string {
 		return "LOSE_HERO"
 	case LOSE_TIME:
 		return "TIME"
+	case LOSE_TIME_EXPIRES:
+		return "LOSE_TIME_EXPIRES"
+	case LOSE_ALL_TOWNS_AND_HEROES:
+		return "LOSE_ALL_TOWNS_AND_HEROES"
 	case LOSE_ALL_TOWNS_OR_HEROES:
 		return "LOSE_ALL_TOWNS_OR_HEROES"
+	case LOSE_TOWN2:
+		return "LOSE_TOWN2"
 	default:
 		return fmt.Sprintf("unknown condition (%X)", int(c))
 	}

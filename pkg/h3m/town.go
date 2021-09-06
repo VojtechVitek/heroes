@@ -5,11 +5,11 @@ import "fmt"
 type Town int
 
 const (
-	None    Town = 0
-	Rampart Town = 1
-	Two     Town = 2
-	Three   Town = 3
-
+	Castle     Town = 0
+	Rampart    Town = 1
+	Tower      Town = 2
+	Inferno    Town = 3
+	_          Town = 4
 	Dungeon    Town = 5
 	Stronghold Town = 6
 	Random     Town = 0xFF
@@ -17,12 +17,14 @@ const (
 
 func (t Town) String() string {
 	switch t {
-	case None:
-		return "<None>"
+	case Castle:
+		return "Castle"
 	case Rampart:
 		return "Rampart"
-	case Two:
-		return "2"
+	case Tower:
+		return "Tower"
+	case Inferno:
+		return "Inferno"
 	case Dungeon:
 		return "Dungeon"
 	case Stronghold:

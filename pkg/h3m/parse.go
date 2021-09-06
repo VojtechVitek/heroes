@@ -251,5 +251,23 @@ func Parse(r io.Reader) (*H3M, error) {
 		_ = heroSettings
 	}
 
+	// ---- Map Tiles ----
+
+	x, y := h3m.MapSize.Size()
+
+	h3m.Tiles = make([]*Tile, x*y)
+
+	for i := 0; i < x*y; i++ {
+		h3m.Tiles[i] = &Tile{
+			TerrainType:   get.Int(1),
+			TerrainSprite: get.Int(1),
+			RiverType:     get.Int(1),
+			RiverSprite:   get.Int(1),
+			RoadType:      get.Int(1),
+			RoadSprite:    get.Int(1),
+			Mirroring:     get.Int(1),
+		}
+	}
+
 	return h3m, get.Error()
 }
