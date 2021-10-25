@@ -39,7 +39,7 @@ type MapInfo struct {
 	LoseConditionDays int
 
 	TeamsCount int
-	Teams      [8]int // RED, BLUE, TAN, GREEN, ORANGE, PURPLE, TEAL, PINK
+	Teams      []int // len=8 - RED, BLUE, TAN, GREEN, ORANGE, PURPLE, TEAL, PINK
 
 	AvailableHeroes   []byte // 20
 	CustomHeroesCount int

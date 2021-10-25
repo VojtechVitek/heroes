@@ -194,6 +194,7 @@ func Parse(r io.Reader) (*H3M, error) {
 	}
 
 	h3m.TeamsCount = get.Int(1)
+	h3m.Teams = make([]int, 8)
 	h3m.Teams[0] = get.Int(1)
 	h3m.Teams[1] = get.Int(1)
 	h3m.Teams[2] = get.Int(1)

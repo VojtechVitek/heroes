@@ -7,11 +7,11 @@ import (
 )
 
 type API interface {
-	GetMapTiles(ctx context.Context) (tiles []*MapTile, err error)
+	GetMap(ctx context.Context) (Map *Map, err error)
 }
 
-type MapTile struct {
-	*h3m.Tile
+type Map struct {
+	*h3m.H3M
 }
 
 // Define empty response type, since TypeScript WebRPC client doesn't handle empty response body.
