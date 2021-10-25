@@ -56,13 +56,3 @@ type Rumor struct {
 	Name string
 	Desc string
 }
-
-type Tile struct {
-	TerrainType   int
-	TerrainSprite int
-	RiverType     int
-	RiverSprite   int
-	RoadType      int
-	RoadSprite    int
-	Mirroring     int
-}
