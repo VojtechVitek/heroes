@@ -99,7 +99,12 @@ func (p *Parser) Bytes(numBytes int) []byte {
 }
 
 func (p *Parser) String(numBytes int) string {
-	return string(p.Bytes(numBytes))
+	cString := p.Bytes(numBytes)
+	if i := bytes.IndexByte(cString, 0); i > 0 {
+		return string(cString[:i])
+	}
+
+	return string(cString)
 }
 
 func (p *Parser) CString() string {
