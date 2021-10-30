@@ -25,6 +25,10 @@ func (l *Lod) ReadFile(filename string) ([]byte, error) {
 		return nil, errors.Errorf("can't find %q in LOD file")
 	}
 
+	if file.compressedSize == 0 {
+		return l.data[file.offset:file.fullSize], nil
+	}
+
 	r, err := gzip.NewReader(bytes.NewReader(l.data[file.offset:file.compressedSize]))
 	if err != nil {
 		return nil, err
