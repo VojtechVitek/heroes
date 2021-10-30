@@ -1,22 +1,25 @@
 package bytestream
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"io"
+	"io/ioutil"
 
 	"github.com/pkg/errors"
 )
 
 type Parser struct {
-	b     *bytes.Buffer
+	b     *bufio.Reader
 	order binary.ByteOrder
 	err   error
 }
 
-func New(b []byte, order binary.ByteOrder) *Parser {
+func New(r io.Reader, order binary.ByteOrder) *Parser {
 	return &Parser{
-		b:     bytes.NewBuffer(b),
+		b:     bufio.NewReaderSize(r, 100),
 		order: order,
 	}
 }
@@ -84,14 +87,15 @@ func (p *Parser) Bytes(numBytes int) []byte {
 		return nil
 	}
 
+	if numBytes == -1 {
+		b, _ := ioutil.ReadAll(p.b)
+		return b
+	}
+
 	buf := make([]byte, numBytes)
-	n, err := p.b.Read(buf)
+	_, err := io.ReadFull(p.b, buf)
 	if err != nil {
 		p.err = errors.Wrapf(err, "ReadBytes(%v)", numBytes)
-		return nil
-	}
-	if n != numBytes {
-		p.err = errors.Errorf("ReadBytes(%v): failed to read all bytes - only %v bytes were read", numBytes, n)
 		return nil
 	}
 
