@@ -9,8 +9,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Parse(r io.Reader) (*Lod, error) {
-	lod := &Lod{
+func Parse(r io.Reader) (*LOD, error) {
+	lod := &LOD{
 		files: map[string]*File{},
 	}
 
@@ -29,7 +29,8 @@ func Parse(r io.Reader) (*Lod, error) {
 	for i := 0; i < numFiles; i++ {
 		file := &File{}
 		file.filename = get.String(16)
-		file.offset = get.Int(4)
+		file.fileOffset = get.Int(4)
+		file.dataOffset = file.fileOffset - 0x4E25C
 		file.fullSize = get.Int(4)
 		_ = get.Bytes(4) // Unknown
 		file.compressedSize = get.Int(4)

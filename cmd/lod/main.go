@@ -29,7 +29,14 @@ func main() {
 	}
 
 	fmt.Println(lod)
+
+	def, err := lod.ReadFile("AB04_.def")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(def)
 }
 
-const usage = `lod H3ab_spr.lod
+const usage = `lod H3sprite.lod
 `
