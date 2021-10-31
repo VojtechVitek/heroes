@@ -1,27 +1,28 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { api } from '../modules/api.ts';
+	import { api } from '../modules/api';
+	import type { Map } from '../modules/rpc.gen';
 
-	let vaults: Array<any> = [];
+	let map: Map = { Tiles: [] };
 
-	let cdrTree: any = {
-		name: 'loading...',
-		files: []
+	const tileTypeColor = {
+		0: '#0F3F50', // Dirt
+		1: '#8FCFDF', // Sand
+		2: '#004000', // Grass
+		3: '#C0C0B0', // Snow
+		4: '#6F804F', // Swamp
+		5: '#307080', // Rough
+		6: '#308000', // Subterranean
+		7: '#4F4F4F', // Lava
+		8: '#90500F', // Water
+		9: '#000000' // Rock
 	};
 
 	onMount(async () => {
 		try {
-			const resp = await api.getVaults();
-			vaults = resp.vaults;
-		} catch (e) {
-			console.error(e);
-		}
-	});
-
-	onMount(async () => {
-		try {
-			const resp = await api.getCdrTree();
-			cdrTree = resp.tree;
+			const resp = await api.getMap();
+			map = resp.m;
+			console.log(map);
 		} catch (e) {
 			console.error(e);
 		}
@@ -31,6 +32,18 @@
 <svelte:head>
 	<title>Home</title>
 </svelte:head>
+
+<table>
+	{#each Array(map.MapSize) as _, i}
+		<tr style="margin: 0px; padding: 0px;">
+			{#each map.Tiles.slice(i * map.MapSize, (i + 1) * map.MapSize) as tile}
+				<td
+					style="background-color: {tileTypeColor[tile.TerrainType]}; margin: 0px; padding: 5px;"
+				/>
+			{/each}
+		</tr>
+	{/each}
+</table>
 
 <section />
 
