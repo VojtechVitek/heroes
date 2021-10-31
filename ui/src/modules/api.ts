@@ -1,7 +1,6 @@
 import { fetch } from 'whatwg-fetch';
-import { ArchiveAPI } from '../modules/Archive.ts';
+import { API } from './rpc.gen';
 
-export const api = new ArchiveAPI('http://localhost:2022', fetch);
+const apiUrl = 'http://localhost:7777';
 
-// console.log(import.meta.env);
-//export const api = new ArchiveAPI('http://192.168.41.51', fetch);
+export const api: API = new API(apiUrl, fetch);
