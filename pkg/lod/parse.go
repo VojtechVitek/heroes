@@ -1,31 +1,28 @@
 package lod
 
 import (
-	"bytes"
 	"encoding/binary"
 	"io"
+	"io/ioutil"
 
 	"github.com/VojtechVitek/heroes/pkg/bytestream"
 	"github.com/pkg/errors"
 )
 
 func Parse(r io.Reader) (*Lod, error) {
-	var b bytes.Buffer
-	if _, err := b.ReadFrom(r); err != nil {
-		return nil, err
-	}
-
 	lod := &Lod{
 		files: map[string]*File{},
-		data:  b.Bytes(),
 	}
 
-	get := bytestream.New(b.Bytes(), binary.LittleEndian)
+	countingReader := &countingReader{r: r}
+
+	get := bytestream.New(countingReader, binary.LittleEndian)
 
 	if get.String(3) != "LOD" {
-		return nil, errors.Errorf("unknown file format, not a LOD file")
+		return nil, errors.Errorf("failed to parse LOD file header")
 	}
 	_ = get.Bytes(5) // Unknown
+
 	numFiles := get.Int(4)
 	_ = get.Bytes(80) // Unknown
 
@@ -40,5 +37,29 @@ func Parse(r io.Reader) (*Lod, error) {
 		lod.files[file.filename] = file
 	}
 
-	return lod, get.Error()
+	if err := get.Error(); err != nil {
+		return nil, errors.Wrap(err, "failed to parse LOD file header data")
+	}
+
+	buf, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read LOD data")
+	}
+
+	// Data starts exactly at 0x4E25C position. But we already read some data
+	// from the original io.Reader above this, so we need to "seek" correctly.
+	lod.data = buf[0x4E25C-countingReader.bytesRead:]
+
+	return lod, nil
+}
+
+type countingReader struct {
+	r         io.Reader
+	bytesRead int
+}
+
+func (r *countingReader) Read(p []byte) (n int, err error) {
+	n, err = r.r.Read(p)
+	r.bytesRead += n
+	return n, err
 }
