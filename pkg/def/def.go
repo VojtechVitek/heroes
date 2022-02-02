@@ -61,7 +61,7 @@ func Parse(r io.Reader) (*Def, error) {
 		palette[i].r = get.Int(1)
 		palette[i].g = get.Int(1)
 		palette[i].b = get.Int(1)
-		palette[i].a = get.Int(1)
+		palette[i].a = 255 // Alpha Opaque
 	}
 	log.Println("post-pallete:", time.Since(now))
 
