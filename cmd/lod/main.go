@@ -40,7 +40,7 @@ func main() {
 
 	def, err := def.Parse(bytes.NewReader(defData))
 	if err != nil {
-		log.Fatalf("failed to load %q: %q: %v", lodFilename, defFilename, err)
+		log.Fatalf("failed to load %q: %v", defFilename, err)
 	}
 
 	fmt.Printf("%v %#v\n", err, def)
