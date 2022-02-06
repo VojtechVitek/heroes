@@ -55,7 +55,7 @@ func Parse(r io.Reader) (*Def, error) {
 		return nil, errors.Errorf("too many blocks: %v", def.TotalBlocks)
 	}
 
-	log.Println("pre-pallete:", time.Since(now))
+	log.Println("pre-palette:", time.Since(now))
 	var palette [256]RGBA
 	for i := 0; i < 256; i++ {
 		palette[i].r = get.Int(1)
@@ -63,54 +63,37 @@ func Parse(r io.Reader) (*Def, error) {
 		palette[i].b = get.Int(1)
 		palette[i].a = 255 // Alpha Opaque
 	}
-	log.Println("post-pallete:", time.Since(now))
+	log.Println("post-palette:", time.Since(now))
 
 	fmt.Printf("total blocks: %v\n", def.TotalBlocks)
 
 	for i := 0; i < def.TotalBlocks; i++ {
 		blockId := get.Int(4)
-		totalEntries := get.Int(4)
-		_ = get.Bytes(8)
+		totalFrames := get.Int(4)
 
-		fmt.Println("total entries:", totalEntries)
-
-		if totalEntries > 1000 {
-			return nil, errors.Errorf("too many block entries: %v", totalEntries)
+		fmt.Println("total frames:", totalFrames)
+		if totalFrames > 1000 {
+			return nil, errors.Errorf("too many block entries: %v", totalFrames)
 		}
 
-		for i := 0; i < totalEntries; i++ {
-			frameName := get.String(13)
-			if err := get.Error(); err != nil {
-				return nil, errors.Wrap(err, "failed to iterate")
-			}
-			fmt.Println("frame name:", frameName)
+		_ = get.Bytes(8) // unknown
+
+		type Frame struct {
+			Name   string
+			Offset int
 		}
 
-		for i := 0; i < totalEntries; i++ {
-			offset := get.Int(4)
-			_ = offset
+		frames := make([]Frame, totalFrames)
+
+		for i := 0; i < totalFrames; i++ {
+			frames[i].Name = get.String(13)
+		}
+		for i := 0; i < totalFrames; i++ {
+			frames[i].Offset = get.Int(4)
 		}
 
-		log.Printf("blockId=%v, totalEntries=%v", blockId, totalEntries)
-	}
-
-	//def.Size = get.Int(4)
-
-	// Sprite
-	sprite := &Sprite{
-		Format:     get.Int(4),
-		FullWidth:  get.Int(4),
-		FullHeight: get.Int(4),
-		Width:      get.Int(4),
-		Height:     get.Int(4),
-		LeftMargin: get.Int(4),
-		TopMargin:  get.Int(4),
-		//DataImage [][]byte
-	}
-
-	switch sprite.Format {
-	default:
-		log.Fatalf("sprite.Format: %v", sprite.Format)
+		log.Printf("blockId=%v, totalEntries=%v", blockId, totalFrames)
+		log.Printf("frames: %#v", frames)
 	}
 
 	return def, nil

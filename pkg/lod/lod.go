@@ -24,6 +24,14 @@ func (l *LOD) String() string {
 	return b.String()
 }
 
+func (l *LOD) Files() []string {
+	files := []string{}
+	for filename, _ := range l.files {
+		files = append(files, filename)
+	}
+	return files
+}
+
 func (l *LOD) ReadFile(filename string) ([]byte, error) {
 	file, ok := l.files[filename]
 	if !ok {

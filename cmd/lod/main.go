@@ -15,7 +15,6 @@ const VERSION = "v0.0.1"
 func main() {
 	//lodFilename := "./lod/H3bitmap.lod"
 	lodFilename := "./lod/H3sprite.lod"
-	defFilename := "AVXsirn0.def"
 
 	if len(os.Args) >= 2 {
 		lodFilename = os.Args[1]
@@ -31,7 +30,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(lod)
+	//fmt.Println(lod.Files())
+
+	defFilename := "AVXsirn0.def"
 
 	defData, err := lod.ReadFile(defFilename)
 	if err != nil {
@@ -42,6 +43,23 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to load %q: %v", defFilename, err)
 	}
+
+	// // Sprite
+	// sprite := &Sprite{
+	// 	Format:     get.Int(4),
+	// 	FullWidth:  get.Int(4),
+	// 	FullHeight: get.Int(4),
+	// 	Width:      get.Int(4),
+	// 	Height:     get.Int(4),
+	// 	LeftMargin: get.Int(4),
+	// 	TopMargin:  get.Int(4),
+	// 	//DataImage [][]byte
+	// }
+
+	// switch sprite.Format {
+	// default:
+	// 	log.Fatalf("sprite.Format: %v", sprite.Format)
+	// }
 
 	fmt.Printf("%v %#v\n", err, def)
 }
