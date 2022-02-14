@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/VojtechVitek/heroes/pkg/def"
@@ -32,9 +33,27 @@ func main() {
 
 	//fmt.Println(lod.Files())
 
-	defFilename := "AVXsirn0.def"
+	srv := &Server{
+		lod: lod,
+	}
 
-	defData, err := lod.ReadFile(defFilename)
+	http.ListenAndServe("0.0.0.0:1001", srv)
+}
+
+const usage = `lod H3sprite.lod
+`
+
+type Server struct {
+	lod *lod.LOD
+}
+
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/favicon.ico" {
+		return
+	}
+
+	defFilename := "AVXsirn0.def"
+	defData, err := s.lod.ReadFile(defFilename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,25 +63,26 @@ func main() {
 		log.Fatalf("failed to load %q: %v", defFilename, err)
 	}
 
-	// // Sprite
-	// sprite := &Sprite{
-	// 	Format:     get.Int(4),
-	// 	FullWidth:  get.Int(4),
-	// 	FullHeight: get.Int(4),
-	// 	Width:      get.Int(4),
-	// 	Height:     get.Int(4),
-	// 	LeftMargin: get.Int(4),
-	// 	TopMargin:  get.Int(4),
-	// 	//DataImage [][]byte
-	// }
+	frame := def.Frames[0]
 
-	// switch sprite.Format {
-	// default:
-	// 	log.Fatalf("sprite.Format: %v", sprite.Format)
-	// }
-
-	fmt.Printf("%v %#v\n", err, def)
+	fmt.Fprintf(w, "%#v", frame)
 }
 
-const usage = `lod H3sprite.lod
-`
+// // Sprite
+// sprite := &Sprite{
+// 	Format:     get.Int(4),
+// 	FullWidth:  get.Int(4),
+// 	FullHeight: get.Int(4),
+// 	Width:      get.Int(4),
+// 	Height:     get.Int(4),
+// 	LeftMargin: get.Int(4),
+// 	TopMargin:  get.Int(4),
+// 	//DataImage [][]byte
+// }
+
+// switch sprite.Format {
+// default:
+// 	log.Fatalf("sprite.Format: %v", sprite.Format)
+// }
+
+// fmt.Printf("%v %#v\n", err, def)
