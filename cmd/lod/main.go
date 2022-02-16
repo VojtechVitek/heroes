@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"fmt"
+	"image/png"
 	"log"
 	"net/http"
 	"os"
@@ -55,17 +55,28 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defFilename := "AVXsirn0.def"
 	defData, err := s.lod.ReadFile(defFilename)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		w.WriteHeader(500)
+		return
 	}
 
 	def, err := def.Parse(bytes.NewReader(defData))
 	if err != nil {
-		log.Fatalf("failed to load %q: %v", defFilename, err)
+		log.Printf("failed to load %q: %v", defFilename, err)
+		w.WriteHeader(500)
+		return
 	}
 
 	frame := def.Frames[0]
 
-	fmt.Fprintf(w, "%#v", frame)
+	img := frame.Image()
+
+	w.Header().Set("Content-Type", "image/png")
+	if err := png.Encode(w, img); err != nil {
+		log.Print(err)
+		w.WriteHeader(500)
+		return
+	}
 }
 
 // // Sprite

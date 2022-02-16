@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"strings"
 
 	"github.com/VojtechVitek/heroes/pkg/bytestream"
 	"github.com/pkg/errors"
@@ -19,22 +18,9 @@ type Def struct {
 	Width       int
 	Height      int
 
+	Palette Palette
+
 	Frames []*Frame
-}
-
-type Frame struct {
-	BlockId int
-	Name    string
-	Offset  int
-	Data    []byte
-}
-
-func (frame *Frame) String() string {
-	var b strings.Builder
-
-	fmt.Fprintf(&b, "frame %v (block %v)", frame.Name, frame.BlockId)
-
-	return b.String()
 }
 
 // https://github.com/vcmi/vcmi/blob/bc1d99431d4b6f075fce3b551a6891fdb4ad5dd1/client/gui/CAnimation.cpp
@@ -52,13 +38,6 @@ type Sprite struct {
 	//Palette
 }
 
-type RGBA struct {
-	r int
-	g int
-	b int
-	a int
-}
-
 func Parse(r io.Reader) (*Def, error) {
 	get := bytestream.New(r, binary.LittleEndian)
 	def := &Def{
@@ -71,12 +50,11 @@ func Parse(r io.Reader) (*Def, error) {
 		return nil, errors.Errorf("too many blocks: %v", def.TotalBlocks)
 	}
 
-	var palette [256]RGBA
 	for i := 0; i < 256; i++ {
-		palette[i].r = get.Int(1)
-		palette[i].g = get.Int(1)
-		palette[i].b = get.Int(1)
-		palette[i].a = 255 // Alpha Opaque
+		def.Palette[i].r = get.Int(1)
+		def.Palette[i].g = get.Int(1)
+		def.Palette[i].b = get.Int(1)
+		def.Palette[i].a = 255 // Alpha Opaque
 	}
 
 	log.Printf("blocks: %v", def.TotalBlocks)
@@ -96,6 +74,9 @@ func Parse(r io.Reader) (*Def, error) {
 			frames[i] = &Frame{
 				BlockId: blockId,
 				Name:    get.String(13),
+				Palette: &def.Palette,
+				Width:   def.Width,
+				Height:  def.Height,
 			}
 		}
 		for i := 0; i < totalFrames; i++ {
@@ -110,6 +91,7 @@ func Parse(r io.Reader) (*Def, error) {
 		for _, frame := range frames {
 			fmt.Printf("%v\n\n", frame)
 		}
+
 	}
 
 	return def, nil
