@@ -78,13 +78,12 @@ func (s *Server) HandleDef(w http.ResponseWriter, r *http.Request) {
 
 	frame := def.Frames[rand.Intn(len(def.Frames))]
 
-	if frame.Format != 0 {
+	img, err := frame.Image()
+	if err != nil {
 		w.WriteHeader(500)
-		fmt.Fprintf(w, "unsupported format %v", frame.Format)
+		fmt.Fprintf(w, "failed to get frame image: %v", err)
 		return
 	}
-
-	img := frame.Image()
 
 	w.Header().Set("Content-Type", "image/png")
 	if err := png.Encode(w, img); err != nil {

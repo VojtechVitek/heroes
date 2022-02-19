@@ -2,6 +2,8 @@ package def
 
 import (
 	"image"
+
+	"github.com/pkg/errors"
 )
 
 const opaqueAlpha = 255
@@ -35,15 +37,26 @@ type Frame struct {
 // 	return b.String()
 // }
 
-func (f *Frame) Image() image.Image {
-	// Collect all pixels at once.
-	// NOTE: Would it be possible to use a custom image.PalettedImage and defer the .RGBA() call for later?
-	pixels := make([]uint8, 0, f.Width*f.Height*4)
-	for i := 0; i < f.Width*f.Height; i++ {
-		r, g, b := f.Palette.RGB(int(f.Data[i]))
-		pixels = append(pixels, r, g, b, opaqueAlpha)
+func (frame *Frame) Image() (image.Image, error) {
+	pixels := make([]uint8, 0, frame.Width*frame.Height*4)
+
+	switch frame.Format {
+	case 0:
+		// Collect all pixels at once.
+		// NOTE: Would it be possible to use a custom image.PalettedImage and defer the .RGBA() call for later?
+		for i := 0; i < frame.Width*frame.Height; i++ {
+			r, g, b := frame.Palette.RGB(int(frame.Data[i]))
+			pixels = append(pixels, r, g, b, opaqueAlpha)
+		}
+
+	case 3:
+
+	default:
+		return nil, errors.Errorf("unsupported format %v", frame.Format)
 	}
 
-	rect := image.Rect(0, 0, f.Width, f.Height)
-	return &image.RGBA{pixels[:f.Width*f.Height*4], 4 * f.Width, rect}
+	rect := image.Rect(0, 0, frame.Width, frame.Height)
+	img := &image.RGBA{pixels[:frame.Width*frame.Height*4], 4 * frame.Width, rect}
+
+	return img, nil
 }
