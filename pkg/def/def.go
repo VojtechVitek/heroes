@@ -21,6 +21,8 @@ type Def struct {
 	Palette Palette
 
 	Frames []*Frame
+
+	Data []byte
 }
 
 // https://github.com/vcmi/vcmi/blob/bc1d99431d4b6f075fce3b551a6891fdb4ad5dd1/client/gui/CAnimation.cpp
@@ -33,12 +35,9 @@ type Sprite struct {
 	Height     int
 	LeftMargin int
 	TopMargin  int
-
-	Data []byte
-	//Palette
 }
 
-func Parse(r io.Reader) (*Def, error) {
+func Parse(r io.ReadSeeker) (*Def, error) {
 	get := bytestream.New(r, binary.LittleEndian)
 	def := &Def{
 		Type:        get.Int(4), // https://github.com/vcmi/vcmi/blob/bc1d99431d4b6f075fce3b551a6891fdb4ad5dd1/client/gui/CAnimation.cpp#L243
@@ -54,7 +53,6 @@ func Parse(r io.Reader) (*Def, error) {
 		def.Palette[i].r = get.Int(1)
 		def.Palette[i].g = get.Int(1)
 		def.Palette[i].b = get.Int(1)
-		def.Palette[i].a = 255 // Alpha Opaque
 	}
 
 	log.Printf("blocks: %v", def.TotalBlocks)
@@ -70,6 +68,7 @@ func Parse(r io.Reader) (*Def, error) {
 
 		frames := make([]*Frame, totalFrames)
 
+		// Get name of each frame (13 bytes).
 		for i := 0; i < totalFrames; i++ {
 			frames[i] = &Frame{
 				BlockId: blockId,
@@ -79,20 +78,33 @@ func Parse(r io.Reader) (*Def, error) {
 				Height:  def.Height,
 			}
 		}
+		// Get offset of each frame (1 byte).
 		for i := 0; i < totalFrames; i++ {
 			frames[i].Offset = get.Int(4)
-			frames[i].Data = get.Bytes(def.TotalBlocks * def.Width * def.Height)
 		}
+
+		// TODO: OFFSET looks to be within file, not within data
 
 		// TODO: Split into [blocks][frames] ?
 
 		def.Frames = append(def.Frames, frames...)
-
-		for _, frame := range frames {
-			fmt.Printf("%v\n\n", frame)
-		}
-
 	}
 
-	return def, nil
+	for _, frame := range def.Frames {
+		r.Seek(int64(frame.Offset), 0)
+		get := bytestream.New(r, binary.LittleEndian)
+
+		frame.size = get.Int(4)
+		frame.Format = get.Int(4)
+		frame.FullWidth = get.Int(4)
+		frame.FullHeight = get.Int(4)
+		frame.Width2 = get.Int(4)
+		frame.Height2 = get.Int(4)
+		frame.LeftMargin = get.Int(4)
+		frame.RightMargin = get.Int(4)
+
+		fmt.Printf("%#v\n\n", frame)
+	}
+
+	return def, get.Error()
 }

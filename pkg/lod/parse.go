@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 
 	"github.com/VojtechVitek/heroes/pkg/bytestream"
+	"github.com/VojtechVitek/heroes/pkg/count"
 	"github.com/pkg/errors"
 )
 
@@ -14,7 +15,7 @@ func Parse(r io.Reader) (*LOD, error) {
 		files: map[string]*File{},
 	}
 
-	countingReader := &countingReader{r: r}
+	countingReader := count.NewReader(r)
 
 	get := bytestream.New(countingReader, binary.LittleEndian)
 
@@ -49,18 +50,7 @@ func Parse(r io.Reader) (*LOD, error) {
 
 	// Data starts exactly at 0x4E25C position. But we already read some data
 	// from the original io.Reader above this, so we need to "seek" correctly.
-	lod.data = buf[0x4E25C-countingReader.bytesRead:]
+	lod.data = buf[0x4E25C-countingReader.BytesRead:]
 
 	return lod, nil
-}
-
-type countingReader struct {
-	r         io.Reader
-	bytesRead int
-}
-
-func (r *countingReader) Read(p []byte) (n int, err error) {
-	n, err = r.r.Read(p)
-	r.bytesRead += n
-	return n, err
 }

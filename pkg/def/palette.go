@@ -6,7 +6,6 @@ type RGBA struct {
 	r int
 	g int
 	b int
-	a int
 }
 
 func (p Palette) RGB(index int) (r, g, b uint8) {
