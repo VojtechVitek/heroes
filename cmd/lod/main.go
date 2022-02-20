@@ -7,18 +7,21 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/VojtechVitek/heroes/pkg/def"
 	"github.com/VojtechVitek/heroes/pkg/lod"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/httplog"
 )
 
 const VERSION = "v0.0.1"
 
 func main() {
-	//lodFilename := "./lod/H3bitmap.lod"
 	lodFilename := "./lod/H3sprite.lod"
+	//lodFilename := "./lod/H3ab_spr.lod"
 
 	if len(os.Args) >= 2 {
 		lodFilename = os.Args[1]
@@ -42,12 +45,14 @@ func main() {
 
 	r := chi.NewRouter()
 
+	logger := httplog.NewLogger("heroes", httplog.Options{JSON: false})
+	r.Use(httplog.RequestLogger(logger))
+
 	//r.Get("/favicon.ico", )
 
-	r.Get("/{lodFile}.lod", srv.HandleLod)
-	r.Get("/{lodFile}.LOD", srv.HandleLod)
-	r.Get("/{lodFile}.lod/{defFile}.def", srv.HandleDef)
-	r.Get("/{lodFile}.lod/{defFile}.DEF", srv.HandleDef)
+	r.Get("/", srv.HandleFS)
+	r.Get("/{lodFile}", srv.HandleLod)
+	r.Get("/{lodFile}/{defFile}", srv.HandleDef)
 
 	if err := http.ListenAndServe("0.0.0.0:3003", r); err != nil {
 		log.Fatal(err)
@@ -61,16 +66,27 @@ type Server struct {
 	lod *lod.LOD
 }
 
+func (s *Server) HandleFS(w http.ResponseWriter, r *http.Request) {
+	for _, file := range []string{"H3ab_bmp.lod", "H3ab_spr.lod", "H3bitmap.lod", "H3sprite.lod"} {
+		fmt.Fprintf(w, `<a href="/%v">%v</a><br`, file, file)
+	}
+}
+
 func (s *Server) HandleLod(w http.ResponseWriter, r *http.Request) {
 	for _, file := range s.lod.Files() {
-		fmt.Fprintf(w, `<a href="/H3sprite.lod/%v">%v</a><br />`, file, file)
+		if strings.ToLower(filepath.Ext(file)) == ".def" {
+			for i := 0; i < 10; i++ {
+				fmt.Fprintf(w, `<a href="/H3sprite.lod/%v?frame=%v"><img src="/H3sprite.lod/%v?frame=%v" /></a> `, file, i, file, i)
+			}
+			fmt.Fprintf(w, `<br /><br />`)
+		}
 	}
 }
 
 func (s *Server) HandleDef(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	defFilename := fmt.Sprintf("%v.def", chi.URLParamFromCtx(ctx, "defFile"))
+	defFilename := chi.URLParamFromCtx(ctx, "defFile")
 	defData, err := s.lod.ReadFile(defFilename)
 	if err != nil {
 		w.WriteHeader(500)
