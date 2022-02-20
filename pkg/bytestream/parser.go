@@ -82,6 +82,16 @@ func (p *Parser) Bool(numBytes int) bool {
 	}
 }
 
+func (p *Parser) Byte() byte {
+	if p.err != nil {
+		return 0
+	}
+
+	var v uint8
+	p.err = binary.Read(p.b, p.order, &v)
+	return byte(v)
+}
+
 func (p *Parser) Bytes(numBytes int) []byte {
 	if p.err != nil || numBytes == 0 {
 		return nil

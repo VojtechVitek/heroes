@@ -1,13 +1,7 @@
 package def
 
-type Palette [256]RGBA
+type Palette []byte // 256 * {R, G, B}
 
-type RGBA struct {
-	r int
-	g int
-	b int
-}
-
-func (p Palette) RGB(index int) (r, g, b uint8) {
-	return uint8(index * 3), uint8(index*3 + 1), uint8(index*3 + 2)
+func (p Palette) RGBA(index int) (r, g, b, a uint8) {
+	return uint8(p[index*3]), uint8(p[index*3+1]), uint8(p[index*3+2]), opaqueAlpha
 }

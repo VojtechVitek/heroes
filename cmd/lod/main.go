@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image/png"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 
@@ -44,7 +43,9 @@ func main() {
 
 	//r.Get("/favicon.ico", )
 
-	r.Get("/H3sprite.lod/{defFile}.def", srv.HandleDef)
+	r.Get("/{lodFile}.lod", srv.HandleLod)
+	r.Get("/{lodFile}.lod/{defFile}.def", srv.HandleDef)
+	r.Get("/{lodFile}.lod/{defFile}.def/palette", srv.HandleDefPalette)
 
 	if err := http.ListenAndServe("0.0.0.0:3003", r); err != nil {
 		log.Fatal(err)
@@ -56,6 +57,12 @@ const usage = `lod H3sprite.lod
 
 type Server struct {
 	lod *lod.LOD
+}
+
+func (s *Server) HandleLod(w http.ResponseWriter, r *http.Request) {
+	for _, file := range s.lod.Files() {
+		fmt.Fprintf(w, `<a href="/H3sprite.lod/%v">%v</a><br />`, file, file)
+	}
 }
 
 func (s *Server) HandleDef(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +83,9 @@ func (s *Server) HandleDef(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	frame := def.Frames[rand.Intn(len(def.Frames))]
+	frame := def.Frames[0] //rand.Intn(len(def.Frames))]
+
+	fmt.Println(frame)
 
 	img, err := frame.Image()
 	if err != nil {
@@ -93,21 +102,39 @@ func (s *Server) HandleDef(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// // Sprite
-// sprite := &Sprite{
-// 	Format:     get.Int(4),
-// 	FullWidth:  get.Int(4),
-// 	FullHeight: get.Int(4),
-// 	Width:      get.Int(4),
-// 	Height:     get.Int(4),
-// 	LeftMargin: get.Int(4),
-// 	TopMargin:  get.Int(4),
-// 	//DataImage [][]byte
-// }
+func (s *Server) HandleDefPalette(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-// switch sprite.Format {
-// default:
-// 	log.Fatalf("sprite.Format: %v", sprite.Format)
-// }
+	defFilename := fmt.Sprintf("%v.def", chi.URLParamFromCtx(ctx, "defFile"))
+	defData, err := s.lod.ReadFile(defFilename)
+	if err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintln(w, err)
+		return
+	}
 
-// fmt.Printf("%v %#v\n", err, def)
+	def, err := def.Parse(bytes.NewReader(defData))
+	if err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "failed to load %q: %v", defFilename, err)
+		return
+	}
+
+	frame := def.Frames[0] //rand.Intn(len(def.Frames))]
+
+	fmt.Println(frame)
+
+	img, err := frame.PaletteImage()
+	if err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "failed to get frame image: %v", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "image/png")
+	if err := png.Encode(w, img); err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintln(w, err)
+		return
+	}
+}

@@ -4,9 +4,7 @@ package def
 
 import (
 	"encoding/binary"
-	"fmt"
 	"io"
-	"log"
 
 	"github.com/VojtechVitek/heroes/pkg/bytestream"
 	"github.com/pkg/errors"
@@ -49,13 +47,18 @@ func Parse(r io.ReadSeeker) (*Def, error) {
 		return nil, errors.Errorf("too many blocks: %v", def.TotalBlocks)
 	}
 
-	for i := 0; i < 256; i++ {
-		def.Palette[i].r = get.Int(1)
-		def.Palette[i].g = get.Int(1)
-		def.Palette[i].b = get.Int(1)
-	}
+	// for i := 0; i < 256; i++ {
+	// 	bytes := get.Bytes(3)
+	// 	def.Palette[i] = RGBA{
+	// 		r: uint8(bytes[0]),
+	// 		g: uint8(bytes[1]),
+	// 		b: uint8(bytes[2]),
+	// 	}
+	// 	def.Palette[i].g = uint8(bytes[1]) + 128
+	// 	def.Palette[i].b = uint8(bytes[2]) + 128
+	// }
 
-	log.Printf("blocks: %v", def.TotalBlocks)
+	def.Palette = get.Bytes(256 * 3)
 
 	for i := 0; i < def.TotalBlocks; i++ {
 		blockId := get.Int(4)
@@ -103,7 +106,7 @@ func Parse(r io.ReadSeeker) (*Def, error) {
 		frame.LeftMargin = get.Int(4)
 		frame.RightMargin = get.Int(4)
 
-		fmt.Printf("%#v\n\n", frame)
+		frame.data = get.Bytes(frame.size)
 	}
 
 	return def, get.Error()
