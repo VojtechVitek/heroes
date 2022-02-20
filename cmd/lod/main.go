@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/VojtechVitek/heroes/pkg/def"
 	"github.com/VojtechVitek/heroes/pkg/lod"
@@ -44,8 +45,9 @@ func main() {
 	//r.Get("/favicon.ico", )
 
 	r.Get("/{lodFile}.lod", srv.HandleLod)
+	r.Get("/{lodFile}.LOD", srv.HandleLod)
 	r.Get("/{lodFile}.lod/{defFile}.def", srv.HandleDef)
-	r.Get("/{lodFile}.lod/{defFile}.def/palette", srv.HandleDefPalette)
+	r.Get("/{lodFile}.lod/{defFile}.DEF", srv.HandleDef)
 
 	if err := http.ListenAndServe("0.0.0.0:3003", r); err != nil {
 		log.Fatal(err)
@@ -83,48 +85,22 @@ func (s *Server) HandleDef(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	frame := def.Frames[0] //rand.Intn(len(def.Frames))]
+	frameNo := 0
+	if parseFrameNo, err := strconv.Atoi(r.URL.Query().Get("frame")); err == nil {
+		frameNo = parseFrameNo
+	}
+
+	if len(def.Frames) <= frameNo {
+		w.WriteHeader(404)
+		fmt.Fprintf(w, "failed to get frame no: %v", frameNo)
+		return
+	}
+
+	frame := def.Frames[frameNo]
 
 	fmt.Println(frame)
 
 	img, err := frame.Image()
-	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintf(w, "failed to get frame image: %v", err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "image/png")
-	if err := png.Encode(w, img); err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
-		return
-	}
-}
-
-func (s *Server) HandleDefPalette(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	defFilename := fmt.Sprintf("%v.def", chi.URLParamFromCtx(ctx, "defFile"))
-	defData, err := s.lod.ReadFile(defFilename)
-	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
-		return
-	}
-
-	def, err := def.Parse(bytes.NewReader(defData))
-	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintf(w, "failed to load %q: %v", defFilename, err)
-		return
-	}
-
-	frame := def.Frames[0] //rand.Intn(len(def.Frames))]
-
-	fmt.Println(frame)
-
-	img, err := frame.PaletteImage()
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "failed to get frame image: %v", err)

@@ -47,17 +47,6 @@ func Parse(r io.ReadSeeker) (*Def, error) {
 		return nil, errors.Errorf("too many blocks: %v", def.TotalBlocks)
 	}
 
-	// for i := 0; i < 256; i++ {
-	// 	bytes := get.Bytes(3)
-	// 	def.Palette[i] = RGBA{
-	// 		r: uint8(bytes[0]),
-	// 		g: uint8(bytes[1]),
-	// 		b: uint8(bytes[2]),
-	// 	}
-	// 	def.Palette[i].g = uint8(bytes[1]) + 128
-	// 	def.Palette[i].b = uint8(bytes[2]) + 128
-	// }
-
 	def.Palette = get.Bytes(256 * 3)
 
 	for i := 0; i < def.TotalBlocks; i++ {
@@ -85,8 +74,6 @@ func Parse(r io.ReadSeeker) (*Def, error) {
 		for i := 0; i < totalFrames; i++ {
 			frames[i].Offset = get.Int(4)
 		}
-
-		// TODO: OFFSET looks to be within file, not within data
 
 		// TODO: Split into [blocks][frames] ?
 

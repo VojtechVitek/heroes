@@ -46,7 +46,7 @@ func (frame *Frame) Image() (image.Image, error) {
 	pixels := make([]uint8, 0, frame.Width2*frame.Height2*4)
 
 	switch frame.Format {
-	case 0:
+	//case 0:
 	// Collect all pixels at once.
 	// NOTE: Would it be possible to use a custom image.PalettedImage and defer the .RGBA() call for later?
 
@@ -61,6 +61,7 @@ func (frame *Frame) Image() (image.Image, error) {
 		var lineOffsets []int
 		for i := 0; i < frame.Height2; i++ {
 			lineOffsets = append(lineOffsets, get.Int(2))
+			_ = get.Bytes((frame.Width2 / 16) - 2) // unknown
 		}
 		fmt.Printf("offsets: %#v\n", lineOffsets)
 
@@ -80,8 +81,7 @@ func (frame *Frame) Image() (image.Image, error) {
 					}
 					totalRowLength += length
 				default: // RLE
-					r, g, b, a := frame.Palette.RGBA(length * code) // TODO: chr(code) ??
-
+					r, g, b, a := frame.Palette.RGBA(length * code)
 					for i := 0; i < length; i++ {
 						pixels = append(pixels, r, g, b, a)
 					}
