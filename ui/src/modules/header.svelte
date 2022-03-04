@@ -23,8 +23,8 @@
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
 		</svg>
 		<ul>
-			<li class:active={$page.path === '/'}><a sveltekit:prefetch href="/">Archive</a></li>
-			<li class:active={$page.path === '/vaults'}>
+			<li class:active={$page.url.pathname === '/'}><a sveltekit:prefetch href="/">Archive</a></li>
+			<li class:active={$page.url.pathname === '/vaults'}>
 				<a sveltekit:prefetch href="/vaults">Vaults</a>
 			</li>
 		</ul>
