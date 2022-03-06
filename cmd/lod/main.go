@@ -80,7 +80,7 @@ func (s *Server) HandleLod(w http.ResponseWriter, r *http.Request) {
 			}
 			fmt.Fprintf(w, `<br /><br />`)
 		} else if strings.ToLower(filepath.Ext(file)) == ".pcx" {
-			fmt.Fprintf(w, `<a href="/H3bitmap.lod/%v"><img src="/H3bitmap.lod/%v" /></a><br />`, file)
+			fmt.Fprintf(w, `<a href="/H3bitmap.lod/%v"><img src="/H3bitmap.lod/%v" /></a><br />`, file, file)
 		}
 	}
 }

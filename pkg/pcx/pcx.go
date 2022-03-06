@@ -45,7 +45,7 @@ func (pcx *Pcx) Image() (image.Image, error) {
 
 		// Raw 24bit RGB pixels.
 		for i := 0; i < pcx.Width*pcx.Height; i++ {
-			pixels = append(pixels, pcx.data[i*3:i*3+2]...)
+			pixels = append(pixels, pcx.data[i*3:i*3+3]...)
 			pixels = append(pixels, palette.OpaqueAlpha)
 		}
 
