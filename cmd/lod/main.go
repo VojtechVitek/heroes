@@ -13,6 +13,7 @@ import (
 
 	"github.com/VojtechVitek/heroes/pkg/def"
 	"github.com/VojtechVitek/heroes/pkg/lod"
+	"github.com/VojtechVitek/heroes/pkg/pcx"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 )
@@ -134,8 +135,6 @@ func (s *Server) handleDef(w http.ResponseWriter, r *http.Request) {
 
 	frame := def.Frames[frameNo]
 
-	fmt.Println(frame)
-
 	img, err := frame.Image()
 	if err != nil {
 		w.WriteHeader(500)
@@ -170,32 +169,17 @@ func (s *Server) handlePcx(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// frameNo := 0
-	// if parseFrameNo, err := strconv.Atoi(r.URL.Query().Get("frame")); err == nil {
-	// 	frameNo = parseFrameNo
-	// }
+	img, err := pcx.Image()
+	if err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "failed to get pcx image: %v", err)
+		return
+	}
 
-	// if len(def.Frames) <= frameNo {
-	// 	w.WriteHeader(404)
-	// 	fmt.Fprintf(w, "failed to get frame no: %v", frameNo)
-	// 	return
-	// }
-
-	// frame := def.Frames[frameNo]
-
-	// fmt.Println(frame)
-
-	// img, err := frame.Image()
-	// if err != nil {
-	// 	w.WriteHeader(500)
-	// 	fmt.Fprintf(w, "failed to get frame image: %v", err)
-	// 	return
-	// }
-
-	// w.Header().Set("Content-Type", "image/png")
-	// if err := png.Encode(w, img); err != nil {
-	// 	w.WriteHeader(500)
-	// 	fmt.Fprintln(w, err)
-	// 	return
-	// }
+	w.Header().Set("Content-Type", "image/png")
+	if err := png.Encode(w, img); err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintln(w, err)
+		return
+	}
 }

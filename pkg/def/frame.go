@@ -8,17 +8,16 @@ import (
 	"strings"
 
 	"github.com/VojtechVitek/heroes/pkg/bytestream"
+	"github.com/VojtechVitek/heroes/pkg/palette"
 	"github.com/pkg/errors"
 )
-
-const opaqueAlpha = 255
 
 type Frame struct {
 	BlockId int
 	Name    string
 	Offset  int
 
-	Palette *Palette
+	Palette *palette.Palette
 	Width   int
 	Height  int
 
@@ -172,7 +171,7 @@ func (frame *Frame) Image() (image.Image, error) {
 		return nil, errors.Errorf("failed to parse DEF image (format %v): missing %v pixels", frame.Format, cap(pixels)-len(pixels))
 	}
 	// for i := 0; i < cap(pixels)-len(pixels); i++ {
-	// 	pixels = append(pixels, 255, 255, 255, opaqueAlpha) // White.
+	// 	pixels = append(pixels, 255, 255, 255, palette.OpaqueAlpha) // White.
 	// }
 
 	rect := image.Rect(0, 0, frame.Width2, frame.Height2)

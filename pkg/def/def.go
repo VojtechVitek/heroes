@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"github.com/VojtechVitek/heroes/pkg/bytestream"
+	"github.com/VojtechVitek/heroes/pkg/palette"
 	"github.com/pkg/errors"
 )
 
@@ -16,7 +17,7 @@ type Def struct {
 	Width       int
 	Height      int
 
-	Palette Palette
+	Palette palette.Palette
 
 	Frames []*Frame
 
