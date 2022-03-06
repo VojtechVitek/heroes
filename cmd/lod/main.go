@@ -20,8 +20,9 @@ import (
 const VERSION = "v0.0.1"
 
 func main() {
-	lodFilename := "./lod/H3sprite.lod"
+	//lodFilename := "./lod/H3sprite.lod"
 	//lodFilename := "./lod/H3ab_spr.lod"
+	lodFilename := "./lod/H3bitmap.lod"
 
 	if len(os.Args) >= 2 {
 		lodFilename = os.Args[1]
@@ -37,8 +38,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//fmt.Println(lod.Files())
-
 	srv := &Server{
 		lod: lod,
 	}
@@ -52,7 +51,7 @@ func main() {
 
 	r.Get("/", srv.HandleFS)
 	r.Get("/{lodFile}", srv.HandleLod)
-	r.Get("/{lodFile}/{defFile}", srv.HandleDef)
+	r.Get("/{lodFile}/{filename}", srv.HandleLodFile)
 
 	if err := http.ListenAndServe("0.0.0.0:3003", r); err != nil {
 		log.Fatal(err)
@@ -79,25 +78,46 @@ func (s *Server) HandleLod(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, `<a href="/H3sprite.lod/%v?frame=%v"><img src="/H3sprite.lod/%v?frame=%v" /></a> `, file, i, file, i)
 			}
 			fmt.Fprintf(w, `<br /><br />`)
+		} else if strings.ToLower(filepath.Ext(file)) == ".pcx" {
+			fmt.Fprintf(w, `<a href="/H3bitmap.lod/%v"><img src="/H3bitmap.lod/%v" /></a><br />`, file)
 		}
 	}
 }
 
-func (s *Server) HandleDef(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleLodFile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	defFilename := chi.URLParamFromCtx(ctx, "defFile")
-	defData, err := s.lod.ReadFile(defFilename)
+	filename := chi.URLParamFromCtx(ctx, "filename")
+
+	switch strings.ToLower(filepath.Ext(filename)) {
+	case ".def":
+		s.handleDef(w, r)
+
+	case ".pcx":
+		s.handlePcx(w, r)
+
+	default:
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "cannot handle %q", filename)
+	}
+}
+
+func (s *Server) handleDef(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	filename := chi.URLParamFromCtx(ctx, "filename")
+
+	lodData, err := s.lod.ReadFile(filename)
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintln(w, err)
 		return
 	}
 
-	def, err := def.Parse(bytes.NewReader(defData))
+	def, err := def.Parse(bytes.NewReader(lodData))
 	if err != nil {
 		w.WriteHeader(500)
-		fmt.Fprintf(w, "failed to load %q: %v", defFilename, err)
+		fmt.Fprintf(w, "failed to load %q: %v", filename, err)
 		return
 	}
 
@@ -129,4 +149,53 @@ func (s *Server) HandleDef(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, err)
 		return
 	}
+}
+
+func (s *Server) handlePcx(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	filename := chi.URLParamFromCtx(ctx, "filename")
+
+	lodData, err := s.lod.ReadFile(filename)
+	if err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintln(w, err)
+		return
+	}
+
+	pcx, err := pcx.Parse(bytes.NewReader(lodData))
+	if err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "failed to load %q: %v", filename, err)
+		return
+	}
+
+	// frameNo := 0
+	// if parseFrameNo, err := strconv.Atoi(r.URL.Query().Get("frame")); err == nil {
+	// 	frameNo = parseFrameNo
+	// }
+
+	// if len(def.Frames) <= frameNo {
+	// 	w.WriteHeader(404)
+	// 	fmt.Fprintf(w, "failed to get frame no: %v", frameNo)
+	// 	return
+	// }
+
+	// frame := def.Frames[frameNo]
+
+	// fmt.Println(frame)
+
+	// img, err := frame.Image()
+	// if err != nil {
+	// 	w.WriteHeader(500)
+	// 	fmt.Fprintf(w, "failed to get frame image: %v", err)
+	// 	return
+	// }
+
+	// w.Header().Set("Content-Type", "image/png")
+	// if err := png.Encode(w, img); err != nil {
+	// 	w.WriteHeader(500)
+	// 	fmt.Fprintln(w, err)
+	// 	return
+	// }
 }
