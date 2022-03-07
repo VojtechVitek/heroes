@@ -1,7 +1,7 @@
 package h3m
 
 type Tile struct {
-	TerrainType   int
+	TerrainType   Terrain
 	TerrainSprite int
 	RiverType     int
 	RiverSprite   int

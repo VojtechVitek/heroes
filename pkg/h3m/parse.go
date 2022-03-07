@@ -1,7 +1,6 @@
 package h3m
 
 import (
-	"bytes"
 	"compress/gzip"
 	"encoding/binary"
 	"fmt"
@@ -16,15 +15,7 @@ func Parse(r io.Reader) (*H3M, error) {
 		return nil, err
 	}
 
-	var b bytes.Buffer
-	_, err = b.ReadFrom(r)
-	if err != nil {
-		return nil, err
-	}
-
-	//spew.Dump(b.Bytes())
-
-	get := bytestream.New(b.Bytes(), binary.LittleEndian)
+	get := bytestream.New(r, binary.LittleEndian)
 
 	h3m := &H3M{}
 
@@ -260,7 +251,7 @@ func Parse(r io.Reader) (*H3M, error) {
 
 	for i := 0; i < x*y; i++ {
 		h3m.Tiles[i] = &Tile{
-			TerrainType:   get.Int(1),
+			TerrainType:   Terrain(get.Int(1)),
 			TerrainSprite: get.Int(1),
 			RiverType:     get.Int(1),
 			RiverSprite:   get.Int(1),
