@@ -21,9 +21,9 @@ import (
 const VERSION = "v0.0.1"
 
 func main() {
-	//lodFilename := "./lod/H3sprite.lod"
+	lodFilename := "./lod/H3sprite.lod"
 	//lodFilename := "./lod/H3ab_spr.lod"
-	lodFilename := "./lod/H3bitmap.lod"
+	//lodFilename := "./lod/H3bitmap.lod"
 
 	if len(os.Args) >= 2 {
 		lodFilename = os.Args[1]

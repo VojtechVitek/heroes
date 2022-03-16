@@ -15,7 +15,7 @@ import (
 
 const VERSION = "v0.0.1"
 
-func Router(srv rpc.API) chi.Router {
+func Router(rpcServer *rpc.RPC) chi.Router {
 	r := chi.NewRouter()
 
 	r.Use(middleware.NoCache)            // Disable edge/browser cache, unless overridden explicitly.
@@ -53,39 +53,25 @@ func Router(srv rpc.API) chi.Router {
 		})
 	})
 
-	// Example of a future RPC-specific middleware.
-	r.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-			switch r.URL.Path {
-			// case "/rpc/ArchiveAPI/CreateProjectPath":
-			// 	w.WriteHeader(403)
-			// 	w.Write([]byte(`{"error":"Sorry, only admins can create new paths"}`))
-			// 	return
-			}
-
-			next.ServeHTTP(w, r)
-		})
-	})
-
 	r.Get("/favicon.ico", favicon)
 	r.Get("/robots.txt", robots)
 	r.Get("/version", versionHandler)
 	r.Get("/version.svg", versionSVG)
 
-	r.Handle("/*", rpc.NewAPIServer(srv))
+	r.Get("/maps/{mapName}", rpcServer.HandleMap)
+
+	r.Handle("/*", rpc.NewAPIServer(rpcServer))
 
 	return r
 }
 
 func renderErrorPage(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(500)
-	fmt.Fprintf(w, "<h1>Error occured</h1><br /><pre>%v</pre>\n", err)
+	fmt.Fprintf(w, "<h1>Error occurred</h1><br /><pre>%v</pre>\n", err)
 }
 
 func favicon(w http.ResponseWriter, r *http.Request) {
-	// Favicon redirect, same as https://www.d-wise.com/favicon.ico.
-	http.Redirect(w, r, "https://cdn2.hubspot.net/hubfs/188561/swift-icon-small.png", 302)
+	w.WriteHeader(404)
 }
 
 func robots(w http.ResponseWriter, r *http.Request) {

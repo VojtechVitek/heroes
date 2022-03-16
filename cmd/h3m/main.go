@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/VojtechVitek/heroes/pkg/h3m"
@@ -31,9 +32,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	heroes := &rpc.RPC{
+	rpcServer := &rpc.RPC{
 		Maps: map[string]*h3m.H3M{
-			mapFileName: m,
+			filepath.Base(mapFileName): m,
 		},
 	}
 
@@ -41,7 +42,7 @@ func main() {
 	bind := fmt.Sprintf("0.0.0.0:%d", 7777)
 	srv := &http.Server{
 		Addr:              bind,
-		Handler:           router.Router(heroes),
+		Handler:           router.Router(rpcServer),
 		IdleTimeout:       60 * time.Second, // idle connections
 		ReadHeaderTimeout: 10 * time.Second, // request header
 		ReadTimeout:       5 * time.Minute,  // request body
@@ -49,7 +50,6 @@ func main() {
 		MaxHeaderBytes:    1 << 20,          // 1 MB
 	}
 
-	log.Printf("Archive API (%v) serving at %v", VERSION, bind)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
