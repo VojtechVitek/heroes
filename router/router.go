@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/httplog"
 )
 
-const VERSION = "v0.0.1"
+const VERSION = "development"
 
 func Router(rpcServer *rpc.RPC) chi.Router {
 	r := chi.NewRouter()

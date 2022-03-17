@@ -9,9 +9,11 @@ const (
 	Rampart    Town = 1
 	Tower      Town = 2
 	Inferno    Town = 3
-	_          Town = 4
+	Necropolis Town = 4
 	Dungeon    Town = 5
 	Stronghold Town = 6
+	Fortress   Town = 7
+	Conflux    Town = 8
 	Random     Town = 0xFF
 )
 
@@ -25,13 +27,19 @@ func (t Town) String() string {
 		return "Tower"
 	case Inferno:
 		return "Inferno"
+	case Necropolis:
+		return "Necropolis"
 	case Dungeon:
 		return "Dungeon"
 	case Stronghold:
 		return "Stronghold"
+	case Fortress:
+		return "Fortress"
+	case Conflux:
+		return "Conflux"
 	case Random:
 		return "<Random>"
 	default:
-		return fmt.Sprintf("unknown (%x)", int(t))
+		return fmt.Sprintf("unknown town %x", int(t))
 	}
 }

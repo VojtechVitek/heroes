@@ -16,7 +16,7 @@ import (
 const VERSION = "v0.0.1"
 
 func main() {
-	mapFileName := "./maps/Loss of Innocence.h3m"
+	mapFileName := "./maps/roadblock-by-jahseh.h3m"
 
 	if len(os.Args) >= 2 {
 		mapFileName = os.Args[1]
