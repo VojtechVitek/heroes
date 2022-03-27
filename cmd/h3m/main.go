@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/VojtechVitek/heroes/pkg/h3m"
@@ -16,26 +14,8 @@ import (
 const VERSION = "v0.0.1"
 
 func main() {
-	mapFileName := "./maps/roadblock-by-jahseh.h3m"
-
-	if len(os.Args) >= 2 {
-		mapFileName = os.Args[1]
-	}
-
-	f, err := os.Open(mapFileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	m, err := h3m.Parse(f)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	rpcServer := &rpc.RPC{
-		Maps: map[string]*h3m.H3M{
-			filepath.Base(mapFileName): m,
-		},
+		Maps: map[string]*h3m.H3M{},
 	}
 
 	// Create HTTP server.
@@ -55,5 +35,5 @@ func main() {
 	}
 }
 
-const usage = `h3m map.h3m
+const usage = `h3m
 `

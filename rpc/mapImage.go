@@ -12,10 +12,10 @@ func (rpc RPC) HandleMap(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	mapName := chi.URLParamFromCtx(ctx, "mapName")
-	m, ok := rpc.Maps[mapName]
-	if !ok {
+	m, err := rpc.GetMap(ctx, mapName)
+	if err != nil {
 		w.WriteHeader(404)
-		fmt.Fprintf(w, "failed to find map: %s", mapName)
+		fmt.Fprintf(w, "failed to find map: %s: %v", mapName, err)
 		return
 	}
 

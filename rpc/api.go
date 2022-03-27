@@ -7,7 +7,7 @@ import (
 )
 
 type API interface {
-	GetMap(ctx context.Context) (m *Map, err error)
+	GetMap(ctx context.Context, filename string) (m *Map, err error)
 }
 
 type Map struct {

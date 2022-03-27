@@ -19,7 +19,7 @@ import (
 type H3M struct {
 	Format FileFormat
 	MapInfo
-	Players []Player
+	Players []Player // 8 players: Red, Blue, Tan, Green, Orange, Purple, Teal, Pink
 	Tiles   []*Tile
 }
 
@@ -53,30 +53,31 @@ func Parse(r io.Reader) (*H3M, error) {
 
 	h3m.MapInfo.Difficulty = get.Int(1)
 
-	if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
-		h3m.MapInfo.MasteryCap = get.Int(1)
-	}
-
 	// Players, aka 8x H3M_PLAYER.
 	// https://github.com/potmdehex/homm3tools/blob/5687f581a4eb5e7b0e8f48794d7be4e3b0a8cc8b/h3m/h3mlib/h3m_structures/h3m.h#L30
 	for i := 0; i < 8; i++ {
 		player := Player{}
+
+		if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
+			player.MasteryCap = get.Int(1)
+		}
+
 		player.CanBeHuman = get.Bool(1)
 		player.CanBeComputer = get.Bool(1)
-		player.Behavior = get.Int(1)
+		player.Behavior = get.Int(1) // 0-Random, 1-Warrior, 2-Builder, 3-Explorer
 
 		if h3m.Format.Is(ShadowOfDeath) {
-			player.AllowedAlignments = get.Int(1)
+			player.AllowedAlignments = get.Int(1) // Bool? .. whether it is set which towns the player owns
 		}
 
 		player.TownTypes = Town(get.Int(1))
 
 		if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
-			townConflux := get.Int(1)
-			_ = townConflux // not used for now..
+			townTypeConflux := get.Int(1)
+			_ = townTypeConflux // not used for now..
 		}
 
-		player.Unknown1_HasRandomTown = get.Bool(1)
+		player.HasRandomTown = get.Bool(1)
 		player.HasMainTown = get.Bool(1)
 
 		if h3m.Format.Is(ROE) {
@@ -98,13 +99,8 @@ func Parse(r io.Reader) (*H3M, error) {
 				startingHeroNameLen := get.Int(4)
 				player.StartingHeroName = get.String(startingHeroNameLen)
 			}
+
 		} else if h3m.Format.Is(ArmageddonsBlade, ShadowOfDeath) {
-			// union H3M_PLAYER_EXT_ABSOD {
-			//   struct H3M_PLAYER_EXT_ABSOD_DEFAULT e0;
-			//   struct H3M_PLAYER_EXT_WITH_TOWN_ABSOD e1;
-			//   struct H3M_PLAYER_EXT_WITH_HERO_ABSOD e2;
-			//   struct H3M_PLAYER_EXT_WITH_TOWN_AND_HERO_ABSOD e3;
-			// }
 
 			if player.HasMainTown {
 				player.StartingTownCreateHero = get.Bool(1)
@@ -112,23 +108,18 @@ func Parse(r io.Reader) (*H3M, error) {
 				player.StartingTownPos.X = get.Int(1)
 				player.StartingTownPos.Y = get.Int(1)
 				player.StartingTownPos.Z = get.Int(1)
-
-				//  meta->player_ext_types[idx] = 1;
 			}
-
-			// When type != 0xFF
-			// player_has_ai[idx] = 1;
 
 			player.StartingHeroIsRandom = get.Bool(1)
 			player.StartingHeroType = get.Int(1)
 			player.StartingHeroFace = get.Int(1)
 
-			len := get.Int(4)
-			player.StartingHeroName = get.String(len)
-			fmt.Println("Player", i, "name (=", len, "):", player.StartingHeroName, ", StartingHeroType:", player.StartingHeroType)
+			startingHeroNameLen := get.Int(4)
+			player.StartingHeroName = get.String(startingHeroNameLen)
+			//fmt.Println("Player", i, "name (=", len, "):", player.StartingHeroName, ", StartingHeroType:", player.StartingHeroType)
 
 			if player.StartingHeroType != 0xFF {
-				_ = get.Bytes(1) // unknown byte
+				_ = get.Bytes(1) // Number of the hero's face. Standard face if 0xFF.
 				heroesCount := get.Int(4)
 				fmt.Println("heroesCount:", heroesCount)
 				if heroesCount > 10 {
@@ -141,6 +132,7 @@ func Parse(r io.Reader) (*H3M, error) {
 					fmt.Println(i, ": ", heroesName, "(", len, ")", heroesType)
 				}
 			}
+
 		} else {
 			// https://github.com/potmdehex/homm3tools/commit/d8b9f48b2567e5094aaed95e2205a71f279b9685
 			return nil, errors.Errorf("TODO: Map format %v", h3m.Format)

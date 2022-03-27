@@ -1,13 +1,15 @@
 package h3m
 
 type Player struct {
-	CanBeHuman             bool
-	CanBeComputer          bool
-	Behavior               int
-	AllowedAlignments      int // ShadowOfDeath only.
-	TownTypes              Town
-	Unknown1_HasRandomTown bool
-	HasMainTown            bool
+	MasteryCap int // Only set on ArmageddonsBlade and ShadowOfDeath maps.
+
+	CanBeHuman        bool
+	CanBeComputer     bool
+	Behavior          int
+	AllowedAlignments int // ShadowOfDeath only.
+	TownTypes         Town
+	HasRandomTown     bool
+	HasMainTown       bool
 
 	StartingTownCreateHero bool
 	StartingTown           Town
