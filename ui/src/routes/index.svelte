@@ -3,6 +3,7 @@
 	import { api } from '../modules/api';
 	import type { Map } from '../modules/rpc.gen';
 
+	let maps: string[] = [];
 	let map: Map = { Tiles: [] };
 
 	const tileTypeColor = {
@@ -20,9 +21,8 @@
 
 	onMount(async () => {
 		try {
-			const resp = await api.getMap();
-			map = resp.m;
-			console.log(map);
+			const resp = await api.listMaps();
+			maps = resp.maps;
 		} catch (e) {
 			console.error(e);
 		}
@@ -32,6 +32,12 @@
 <svelte:head>
 	<title>Home</title>
 </svelte:head>
+
+<select>
+	{#each maps as name}
+		<option value={name}>{name}</option>
+	{/each}
+</select>
 
 <table>
 	{#each Array(map.MapSize) as _, i}

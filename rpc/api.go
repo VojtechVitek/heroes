@@ -7,6 +7,7 @@ import (
 )
 
 type API interface {
+	ListMaps(ctx context.Context) (maps []string, err error)
 	GetMap(ctx context.Context, filename string) (m *Map, err error)
 }
 

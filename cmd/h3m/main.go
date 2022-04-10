@@ -30,6 +30,8 @@ func main() {
 		MaxHeaderBytes:    1 << 20,          // 1 MB
 	}
 
+	log.Printf("Listening on %v", bind)
+
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal(err)
 	}

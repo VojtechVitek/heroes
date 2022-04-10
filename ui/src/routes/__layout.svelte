@@ -10,7 +10,7 @@
 </main>
 
 <footer>
-	<p>Heroes Map prototype prototype)</p>
+	<p>Heroes Map prototype prototype</p>
 </footer>
 
 <style>
