@@ -1,18 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-	import { api } from '../modules/api.ts';
 
-	let currentUser = { Name: 'not logged in' };
+	let currentUser = { Name: '' };
 
-	onMount(async () => {
-		try {
-			const resp = await api.getCurrentUser();
-			currentUser = resp.user;
-		} catch (e) {
-			console.error(e);
-		}
-	});
+	// onMount(async () => {
+	// 	try {
+	// 		const resp = await api.getCurrentUser();
+	// 		currentUser = resp.user;
+	// 	} catch (e) {
+	// 		console.error(e);
+	// 	}
+	// });
 </script>
 
 <header>

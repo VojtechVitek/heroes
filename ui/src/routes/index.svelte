@@ -3,7 +3,11 @@
 	import { api } from '../modules/api';
 	import type { Map } from '../modules/rpc.gen';
 
+	const apiUrl = 'http://localhost:7777';
+
 	let maps: string[] = [];
+	let selectedMapName: string = 'The Five Rings.h3m';
+
 	let map: Map = { Tiles: [] };
 
 	const tileTypeColor = {
@@ -19,6 +23,19 @@
 		9: '#000000' // Rock
 	};
 
+	const fetchMap = async (mapName: string) => {
+		try {
+			const resp = await api.getMap({ filename: mapName });
+			map = resp.m;
+		} catch (e) {
+			console.error(e);
+		}
+	};
+
+	$: {
+		fetchMap(selectedMapName);
+	}
+
 	onMount(async () => {
 		try {
 			const resp = await api.listMaps();
@@ -33,11 +50,13 @@
 	<title>Home</title>
 </svelte:head>
 
-<select>
+<select bind:value={selectedMapName}>
 	{#each maps as name}
 		<option value={name}>{name}</option>
 	{/each}
 </select>
+
+<img src="{apiUrl}/maps/{selectedMapName}" width="255" height="255" />
 
 <table>
 	{#each Array(map.MapSize) as _, i}

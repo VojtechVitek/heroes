@@ -1,17 +1,14 @@
 <script lang="ts">
 	import '../app.css';
-	import Header from '../modules/header.svelte';
 </script>
 
-<Header />
+<!-- <Header /> -->
 
 <main>
 	<slot />
 </main>
 
-<footer>
-	<p>Heroes Map prototype prototype</p>
-</footer>
+<footer />
 
 <style>
 	main {
