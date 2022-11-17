@@ -1,0 +1,792 @@
+{
+ "webrpc": "v1",
+ "name": "HeroesServer",
+ "version": "vTODO",
+ "imports": null,
+ "messages": [
+  {
+   "name": "H3mPosition",
+   "type": "struct",
+   "fields": [
+    {
+     "name": "X",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Y",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Z",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    }
+   ]
+  },
+  {
+   "name": "H3mCustomHeroes",
+   "type": "struct",
+   "fields": [
+    {
+     "name": "Type",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Face",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Name",
+     "type": "string",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "AllowedPlayers",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    }
+   ]
+  },
+  {
+   "name": "H3mMapInfo",
+   "type": "struct",
+   "fields": [
+    {
+     "name": "HasHero",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "MapSize",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "HasTwoLevels",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Name",
+     "type": "string",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Desc",
+     "type": "string",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Difficulty",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinCondition",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionAllowNormalWin",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionAppliesToComputer",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionType",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionAmount",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionUpgradeHallLevel",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionUpgradeCastleLevel",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionPos",
+     "type": "H3mPosition",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "LoseCondition",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "LoseConditionPos",
+     "type": "H3mPosition",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "LoseConditionDays",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "TeamsCount",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Teams",
+     "type": "[]int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "AvailableHeroes",
+     "type": "[]byte",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "CustomHeroesCount",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "CustomHeroes",
+     "type": "[]H3mCustomHeroes",
+     "optional": false,
+     "value": "",
+     "meta": null
+    }
+   ]
+  },
+  {
+   "name": "H3mPlayer",
+   "type": "struct",
+   "fields": [
+    {
+     "name": "MasteryCap",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "CanBeHuman",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "CanBeComputer",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Behavior",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "AllowedAlignments",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "TownTypes",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "HasRandomTown",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "HasMainTown",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "StartingTownCreateHero",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "StartingTown",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "StartingTownPos",
+     "type": "H3mPosition",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "StartingHeroIsRandom",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "StartingHeroType",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "StartingHeroFace",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "StartingHeroName",
+     "type": "string",
+     "optional": false,
+     "value": "",
+     "meta": null
+    }
+   ]
+  },
+  {
+   "name": "H3mTile",
+   "type": "struct",
+   "fields": [
+    {
+     "name": "TerrainType",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "TerrainSprite",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "RiverType",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "RiverSprite",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "RoadType",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "RoadSprite",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Mirroring",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    }
+   ]
+  },
+  {
+   "name": "H3mH3M",
+   "type": "struct",
+   "fields": [
+    {
+     "name": "Format",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "HasHero",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "MapSize",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "HasTwoLevels",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Name",
+     "type": "string",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Desc",
+     "type": "string",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Difficulty",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinCondition",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionAllowNormalWin",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionAppliesToComputer",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionType",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionAmount",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionUpgradeHallLevel",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionUpgradeCastleLevel",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionPos",
+     "type": "H3mPosition",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "LoseCondition",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "LoseConditionPos",
+     "type": "H3mPosition",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "LoseConditionDays",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "TeamsCount",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Teams",
+     "type": "[]int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "AvailableHeroes",
+     "type": "[]byte",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "CustomHeroesCount",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "CustomHeroes",
+     "type": "[]H3mCustomHeroes",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Players",
+     "type": "[]H3mPlayer",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Tiles",
+     "type": "[]H3mTile",
+     "optional": false,
+     "value": "",
+     "meta": null
+    }
+   ]
+  },
+  {
+   "name": "Map",
+   "type": "struct",
+   "fields": [
+    {
+     "name": "Format",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "HasHero",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "MapSize",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "HasTwoLevels",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Name",
+     "type": "string",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Desc",
+     "type": "string",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Difficulty",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinCondition",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionAllowNormalWin",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionAppliesToComputer",
+     "type": "bool",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionType",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionAmount",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionUpgradeHallLevel",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionUpgradeCastleLevel",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "WinConditionPos",
+     "type": "H3mPosition",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "LoseCondition",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "LoseConditionPos",
+     "type": "H3mPosition",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "LoseConditionDays",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "TeamsCount",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Teams",
+     "type": "[]int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "AvailableHeroes",
+     "type": "[]byte",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "CustomHeroesCount",
+     "type": "int",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "CustomHeroes",
+     "type": "[]H3mCustomHeroes",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Players",
+     "type": "[]H3mPlayer",
+     "optional": false,
+     "value": "",
+     "meta": null
+    },
+    {
+     "name": "Tiles",
+     "type": "[]H3mTile",
+     "optional": false,
+     "value": "",
+     "meta": null
+    }
+   ]
+  }
+ ],
+ "services": [
+  {
+   "name": "HeroesServer",
+   "methods": [
+    {
+     "name": "GetMap",
+     "inputs": [
+      {
+       "name": "filename",
+       "type": "string",
+       "optional": false
+      }
+     ],
+     "outputs": [
+      {
+       "name": "m",
+       "type": "Map",
+       "optional": false
+      }
+     ]
+    },
+    {
+     "name": "ListMaps",
+     "inputs": [],
+     "outputs": [
+      {
+       "name": "maps",
+       "type": "[]string",
+       "optional": false
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

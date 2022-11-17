@@ -1,13 +1,16 @@
 package heroes
 
-// We're using fork of WebRPC to generate server code and clients in TypeScript and Go.
-// See https://hub.docker.com/repository/docker/golangcz/webrpc.
+//go:generate go2webrpc --version
+//go:generate webrpc-gen --version
 
-//go:generate echo "WebRPC generating ui/src/modules/api.gen.ts"
-//go:generate sh -c "docker run --rm -v $PWD:/be golangcz/webrpc:v0.1.1 gen -schema=/be/rpc/api.go -target=ts -client > ./ui/src/modules/rpc.gen.ts"
+//go:generate echo "Generating webrpc.json schema from API interface"
+//go:generate go2webrpc -schema=./rpc -interface=HeroesServer -out ./rpc/webrpc.json
 
-//go:generate echo "WebRPC generating be/pkg/heroes/client.gen.go"
-//go:generate sh -c "docker run --rm -v $PWD:/be golangcz/webrpc:v0.1.1 gen -schema=/be/rpc/api.go -target=go -client -pkg=heroes > ./pkg/heroes/client.gen.go"
+//go:generate echo "Generating rpc/server.gen.go"
+//go:generate webrpc-gen -schema=./rpc/webrpc.json -target=../../webrpc/gen-golang -pkg=rpc -server -types=false -out=./rpc/server.gen.go
 
-//go:generate echo "WebRPC generating be/rpc/server.gen.go"
-//go:generate sh -c "docker run --rm -v $PWD:/be golangcz/webrpc:v0.1.1 gen -schema=/be/rpc/api.go -target=go -server -pkg=rpc -extra=noTypes > ./rpc/server.gen.go"
+//go:generate echo "Generating pkg/hubs/rpc_client.go"
+//go:generate webrpc-gen -schema=./rpc/webrpc.json -target=../../webrpc/gen-golang -pkg=heroes -client -out=./pkg/heroes/client.gen.go
+
+//go:generate echo "Generating ../../hubs-frontend/applications/next/src/restApi/api.ts"
+//go:generate webrpc-gen -schema=./rpc/webrpc.json -target=typescript -client -out=./ui/src/modules/rpc.gen.ts
