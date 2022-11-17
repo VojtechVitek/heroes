@@ -1,0 +1,43 @@
+* {
+	box-sizing: border-box;
+}
+
+html,
+body,
+#svelte {
+	margin: 0;
+	padding: 0;
+	height: 100vh;
+	width: 100vw;
+	background-color: var(--background-color);
+	display: flex;
+	flex-flow: column;
+}
+main {
+	display: flex;
+	flex-flow: column;
+	flex: 1;
+}
+
+:root {
+	font-family: Helvetica, sans-serif;
+	--background-color: rgb(241 245 253);
+
+	--header-bg-color: white;
+	--button-bg-color: #1976d2;
+	--button-border: 0;
+	--button-separator: hsl(210, 70%, 46%);
+	--button-border-radius: 5px;
+	--button-fg-color: white;
+	--button-height: 40px;
+	--button-selected: blue;
+	--button-hovered: blue;
+}
+@keyframes move {
+	0% {
+		offset-distance: 0%;
+	}
+	100% {
+		offset-distance: 100%;
+	}
+}
